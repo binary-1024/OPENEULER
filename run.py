@@ -3,7 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 import os
 import pandas as pd
-
+from urllib.parse import unquote
 def get_url_list():
     # 这里只测试一部分，除了 everything 还有写其他乱麻七糟的，不过问题不大，不影响后续解析，都一样。
     # https://archives.openeuler.openatom.cn/openEuler-21.03/everything/x86_64/Packages 中提取出 
@@ -121,6 +121,11 @@ def result_test():
         url = row['url']
         suffix = url.split('/')[-1]
         manual_suffix = comp_name + '-' + version + '.' + 'rpm'
+        suffix = unquote(suffix)
+        if suffix != manual_suffix:
+            print(f"url: {url} 解析错误")
+            print(f"suffix: {suffix} 正确suffix: {manual_suffix}")
+            print("-" * 100)
         
 
 
