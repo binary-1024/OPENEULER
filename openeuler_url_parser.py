@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+from urllib.parse import unquote
 
 def parse_openeuler_component_url(url):
     """
@@ -14,7 +15,10 @@ def parse_openeuler_component_url(url):
         - comp_name: 组件名
         - version: 版本号（包含上游版本号-修订号.发行版标识.架构）
     """
-    
+    # 0. url 里面的转义符恢复，比如 %2B 恢复成 +
+    # url = url.replace('%2B', '+')
+    url = unquote(url)
+
     # 1. 获取发行版标识
     release_id = url.split('/')[3]  # openEuler-22.03-LTS-SP4
     
