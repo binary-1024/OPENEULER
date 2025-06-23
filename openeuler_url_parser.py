@@ -65,17 +65,17 @@ def parse_openeuler_component_url(url):
     # 组件名 = comp_version_arch 去掉版本号的部分
     # 需要找到第一个版本数字出现的位置
     
-    # 重新用简单方法实现：找到第一个数字开始的位置
-    import re
-    match = re.search(r'-(\d+)', comp_version_arch)
-    if match:
-        version_start_pos = match.start()
-        comp_name = comp_version_arch[:version_start_pos]
-        version = comp_version_arch[version_start_pos+1:]  # 去掉开头的'-'
-    else:
+    # # 重新用简单方法实现：找到第一个数字开始的位置， 不行这个也不稳妥，换
+    # import re
+    # match = re.search(r'-(\d+)', comp_version_arch)
+    # if match:
+    #     version_start_pos = match.start()
+    #     comp_name = comp_version_arch[:version_start_pos]
+    #     version = comp_version_arch[version_start_pos+1:]  # 去掉开头的'-'
+    # else:
         # 如果没找到数字，使用原来的方法
-        comp_name = comp_version_arch.split('-')[0]
-        version = '-'.join(comp_version_arch.split('-')[1:])
+    comp_name = comp_version_arch.split('-')[0]
+    version = '-'.join(comp_version_arch.split('-')[1:])
     
     return comp_name, version
 
