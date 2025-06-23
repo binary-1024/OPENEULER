@@ -36,16 +36,22 @@ def parse_openeuler_component_url(url):
     if len(parts) >= 3:
         revision_part = '.'.join(parts[:-2])  # 'airline-x.x'
         suffix = '.'.join(parts[-2:])  # '7-1.oe2203sp4.src'
+        
     else:
         revision_part = '.'.join(parts[:-1])  # 'airline-x.x'
         suffix = '.'.join(parts[-1:])  # 'src'
+        
+    
+    revision_components = revision_part.split('-') # # 从修订号部分取最后两个'-'分隔的元素（版本号和修订号）
+    if len(revision_components) >= 3:
+        version_revision = '-'.join(revision_components[-2:])  # '7-1'
+        prefix = '-'.join(revision_components[:-2])  # 'airline-x.x'
+    else:
+        version_revision = '-'.join(revision_components[-1:])  # '7-1'
+        prefix = '-'.join(revision_components[:-1])  # 'airline-x.x'
     
     
-    # 从修订号部分取最后两个'-'分隔的元素（版本号和修订号）
-    revision_components = revision_part.split('-')
     
-    version_revision = '-'.join(revision_components[-2:])  # '7-1'
-    prefix = '-'.join(revision_components[:-2])  # 'airline-x.x'
     
         
     # 组合完整版本号
