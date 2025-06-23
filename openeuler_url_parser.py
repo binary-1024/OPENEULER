@@ -32,50 +32,26 @@ def parse_openeuler_component_url(url):
     parts = comp_version_arch.split('.')
     
     # comp_version_arch.split('.')[-3] 是包含修订号的部分
-    # 例如: ['airline-0', '7-1', 'oe2203sp4', 'src']，取 '7-1'
-    revision_part = parts[-3]  # '7-1'
+    # 例如: ['airline-x','x', '7-1', 'oe2203sp4', 'src']，取 '7-1'
+    if len(parts) >= 3:
+        revision_part = '.'.join(parts[:-2])  # 'airline-x.x'
+        suffix = '.'.join(parts[-2:])  # '7-1.oe2203sp4.src'
+    else:
+        revision_part = '.'.join(parts[:-1])  # 'airline-x.x'
+        suffix = '.'.join(parts[-1:])  # 'src'
+    
     
     # 从修订号部分取最后两个'-'分隔的元素（版本号和修订号）
     revision_components = revision_part.split('-')
-    if len(revision_components) >= 2:
-        version_revision = '-'.join(revision_components[-2:])  # '7-1'
-    else:
-        version_revision = revision_part
+    
+    version_revision = '-'.join(revision_components[-2:])  # '7-1'
+    prefix = '-'.join(revision_components[:-2])  # 'airline-x.x'
+    
         
     # 组合完整版本号
-    suffix = '.'.join(parts[-2:])  # 'oe2203sp4.src'
-    version = version_revision + '.' + suffix  # '7-1.oe2203sp4.src'
-    
-    # 但是这样缺少了主版本号，需要从前一个部分获取
-    if len(parts) >= 4:
-        # 例如: 'airline-0' 中的 '0'
-        main_version_part = parts[-4].split('-')[-1]  # '0'
-        version = main_version_part + '-' + version  # '0-7-1.oe2203sp4.src'
-        
+    version = version_revision + '.' + suffix  # 'airline-x.x-7-1.oe2203sp4.src'
+    comp_name = prefix
 
-    # # 备用方法：直接从'-'分割
-    # version_components = comp_version_arch.split('-')
-    # if len(version_components) >= 3:
-    #     # 取最后几个组件作为版本
-    #     version = '-'.join(version_components[1:])  # 去掉组件名部分
-    # else:
-    #     version = version_components[-1] if len(version_components) > 1 else ""
-    
-    # 5. 获取组件名
-    # 组件名 = comp_version_arch 去掉版本号的部分
-    # 需要找到第一个版本数字出现的位置
-    
-    # # 重新用简单方法实现：找到第一个数字开始的位置， 不行这个也不稳妥，换
-    # import re
-    # match = re.search(r'-(\d+)', comp_version_arch)
-    # if match:
-    #     version_start_pos = match.start()
-    #     comp_name = comp_version_arch[:version_start_pos]
-    #     version = comp_version_arch[version_start_pos+1:]  # 去掉开头的'-'
-    # else:
-        # 如果没找到数字，使用原来的方法
-    comp_name = comp_version_arch.split('-')[0]
-    version = '-'.join(comp_version_arch.split('-')[1:])
     
     return comp_name, version
 

@@ -77,12 +77,14 @@ def test():
     for file in os.listdir(old_os_dir):
         with open(os.path.join(old_os_dir, file), "r") as f:
             for url in f:
+                url = url.strip('\n')
                 comp_name, version = parse_openeuler_component_url(url)
                 old_os_url_info.append((comp_name, version, url))
     new_os_url_info = []
     for file in os.listdir(new_os_dir):
         with open(os.path.join(new_os_dir, file), "r") as f:
             for url in f:
+                url = url.strip('\n')
                 comp_name, version = parse_openeuler_component_url(url)
                 new_os_url_info.append((comp_name, version, url))
     
