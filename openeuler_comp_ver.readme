@@ -1,0 +1,27 @@
+
+## 输入： 组件 url 
+
+## 解析方法：
+
+基本一个 url 里面的元素就是上述这些元素了，我们开始从 url 来解析元素：
+- Url: https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP4/source/Packages/airline-0.7-1.oe2203sp4.src.rpm
+  - 发行版标识: openEuler-22.03-LTS-SP4 这个元素属于 url.split('/')[3]
+  - 组件名+版本号：comp_version_arch = url.split('/')[-2].strip('rpm')
+    组件名-上游版本号-修订号.发行版标识.架构.rpm
+    - 架构: arch = comp_version_arch.split('.')[-1] # 但是这个东西我们不用单切，架构号要作为版本号的一部分，不然没法区分不同的组件
+  - 切分组件 和 版本：
+    这个比较难以强行切分，第一组件名里面包含 - 标识，第二 版本号里面也会包含- 标识，即修订号，不过我们参考了 rpm 类的操作系统社区命名规范之后发现大家必须要求有修订号并且从 1 开始。这样的话我们就可以切分了。
+    - 版本：作为一个唯一标识的版本号，应该具备的信息如下：
+      上游版本号-修订号.发行版标识.架构
+      不稳妥方法：version = '-'.join(comp_version_arch.split('-')[-2:])
+      稳妥方法（以防架构号里面包含'-'）：
+      version = '-'.join(comp_version_arch.split('.')[-3].split('-')[-2:]) +'.'+'.'.join(comp_version_arch.split('.')[-2:])
+    -  组件名：组件名是最难切的，先把版本呢切出来剩余的就是组件名
+      comp_name = comp_version_arch.replace('-'+version, '')
+- 这样我们就获取了  组件名 和 版本 
+Fedora 版本号命名规范参考：
+- https://docs.fedoraproject.org/en-US/packaging-guidelines/Versioning/
+
+
+## 输出 
+返回两个变量 一个是 comp_name 一个是 version 
