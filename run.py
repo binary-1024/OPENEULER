@@ -173,5 +173,5 @@ if __name__ == "__main__":
     #     print(f"comp_name: {comp_name} 正确comp_name: {comp_name}")
     #     print(f"version: {version} 正确version: {version}")
     #     print("-" * 100)
-    # test()
+    test()
     result_test()

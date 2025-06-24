@@ -32,7 +32,7 @@ def parse_openeuler_component_url(url):
     
     # 稳妥方法实现
     parts = comp_version_arch.split('.')  
-    if 'eo' in comp_version_arch:
+    if 'oe' in comp_version_arch:
         # 组件名+版本号+修订号
         revision_part = '.'.join(parts[:-2])  # 'airline-x.x'
         # 发行版+架构
@@ -42,7 +42,6 @@ def parse_openeuler_component_url(url):
         revision_part = '.'.join(parts[:-1])  # 'airline-x.x'
         # 没有发行版， 只有架构
         suffix = '.'.join(parts[-1:])  # 'src'    
-    
     
     # 提取出修订号
     revision_components = revision_part.split('-') 
