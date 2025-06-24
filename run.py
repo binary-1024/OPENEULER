@@ -126,7 +126,18 @@ def result_test():
             print(f"url: {url} 解析错误")
             print(f"suffix: {suffix} 正确suffix: {manual_suffix}")
             print("-" * 100)
-        
+    
+    for index, row in old_os_url_info_df.iloc[1:].iterrows():
+        comp_name = row['comp_name']
+        version = row['version']
+        url = row['url']
+        suffix = url.split('/')[-1]
+        manual_suffix = comp_name + '-' + version + '.' + 'rpm'
+        suffix = unquote(suffix)
+        if suffix != manual_suffix:
+            print(f"url: {url} 解析错误")
+            print(f"suffix: {suffix} 正确suffix: {manual_suffix}")
+            print("-" * 100)
 
 
 if __name__ == "__main__":
@@ -162,5 +173,5 @@ if __name__ == "__main__":
     #     print(f"comp_name: {comp_name} 正确comp_name: {comp_name}")
     #     print(f"version: {version} 正确version: {version}")
     #     print("-" * 100)
-    test()
+    # test()
     result_test()

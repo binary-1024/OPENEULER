@@ -31,10 +31,8 @@ def parse_openeuler_component_url(url):
     # 例如：airline-0.7-1.oe2203sp4.src -> 0.7-1.oe2203sp4
     
     # 稳妥方法实现
-    parts = comp_version_arch.split('.')
-    
-    # 例如: ['airline-0','7-1', 'oe2203sp4', 'src']，取 '7-1'
-    if len(parts) >= 3:
+    parts = comp_version_arch.split('.')  
+    if 'eo' in comp_version_arch:
         # 组件名+版本号+修订号
         revision_part = '.'.join(parts[:-2])  # 'airline-x.x'
         # 发行版+架构
@@ -43,7 +41,8 @@ def parse_openeuler_component_url(url):
         # 组件名+版本号+修订号
         revision_part = '.'.join(parts[:-1])  # 'airline-x.x'
         # 没有发行版， 只有架构
-        suffix = '.'.join(parts[-1:])  # 'src'
+        suffix = '.'.join(parts[-1:])  # 'src'    
+    
     
     # 提取出修订号
     revision_components = revision_part.split('-') 
@@ -54,6 +53,9 @@ def parse_openeuler_component_url(url):
         # airline
         prefix = '-'.join(revision_components[:-2])
     else:
+        print(f"url: {url}")
+        print(f"revision_components: {revision_components}")
+        
         # 如果只有两个元素，则没有修订号
         version_revision = '-'.join(revision_components[-1:])  # '7-1'
         prefix = '-'.join(revision_components[:-1])  # 'airline-x.x'

@@ -1,0 +1,50 @@
+url: https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/cfitsio-3.490-2.x86_64.rpm
+revision_components: ['cfitsio', '3']
+url: https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/cpp-10.3.1-20.x86_64.rpm
+revision_components: ['cpp', '10.3']
+url: https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/fpack-3.490-2.x86_64.rpm
+revision_components: ['fpack', '3']
+url: https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/gcc-10.3.1-20.x86_64.rpm
+revision_components: ['gcc', '10.3']
+url: https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/iSulad-2.0.17-14.x86_64.rpm
+revision_components: ['iSulad', '2.0']
+url: https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/iniparser-4.1-4.x86_64.rpm
+revision_components: ['iniparser', '4']
+url: https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/libasan-10.3.1-20.x86_64.rpm
+revision_components: ['libasan', '10.3']
+url: https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/libatomic-10.3.1-20.x86_64.rpm
+revision_components: ['libatomic', '10.3']
+url: https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/libbson-1.13.1-6.x86_64.rpm
+revision_components: ['libbson', '1.13']
+url: https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/libgcc-10.3.1-20.x86_64.rpm
+revision_components: ['libgcc', '10.3']
+url: https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/libgccjit-10.3.1-20.x86_64.rpm
+revision_components: ['libgccjit', '10.3']
+url: https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/libgfortran-10.3.1-20.x86_64.rpm
+revision_components: ['libgfortran', '10.3']
+url: https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/libgomp-10.3.1-20.x86_64.rpm
+revision_components: ['libgomp', '10.3']
+url: https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/libhdfs-3.3.4-2.x86_64.rpm
+revision_components: ['libhdfs', '3.3']
+url: https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/libitm-10.3.1-20.x86_64.rpm
+revision_components: ['libitm', '10.3']
+url: https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/liblsan-10.3.1-20.x86_64.rpm
+revision_components: ['liblsan', '10.3']
+url: https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/libobjc-10.3.1-20.x86_64.rpm
+revision_components: ['libobjc', '10.3']
+url: https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/libquadmath-10.3.1-20.x86_64.rpm
+revision_components: ['libquadmath', '10.3']
+url: https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/libstdc++-10.3.1-20.x86_64.rpm
+revision_components: ['libstdc++', '10.3']
+url: https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/libtsan-10.3.1-20.x86_64.rpm
+revision_components: ['libtsan', '10.3']
+url: https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/libubsan-10.3.1-20.x86_64.rpm
+revision_components: ['libubsan', '10.3']
+url: https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/mrtg-2.17.7-3.x86_64.rpm
+revision_components: ['mrtg', '2.17']
+url: https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/mysql-8.0.29-1.x86_64.rpm
+revision_components: ['mysql', '8.0']
+url: https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/sgxsdk-2.15.1-8.x86_64.rpm
+revision_components: ['sgxsdk', '2.15']
+url: https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/suitesparse-5.10.1-2.x86_64.rpm
+revision_components: ['suitesparse', '5.10']
