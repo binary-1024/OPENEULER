@@ -9,9 +9,7 @@ def parse_openeuler_component_url(url):
     参数:
         url (str): openEuler组件的URL
         例如: https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP4/source/Packages/airline-0.7-1.oe2203sp4.src.rpm
-    
     返回:
-        tuple: (comp_name, version)
         - comp_name: 组件名
         - version: 版本号（包含上游版本号-修订号.发行版标识.架构）
     """
@@ -30,33 +28,35 @@ def parse_openeuler_component_url(url):
     
     # 4. 切分版本号（按照文档的稳妥方法）
     # 版本号格式：上游版本号-修订号.发行版标识.架构
-    # 例如：0.7-1.oe2203sp4.src
+    # 例如：airline-0.7-1.oe2203sp4.src -> 0.7-1.oe2203sp4
     
     # 稳妥方法实现
     parts = comp_version_arch.split('.')
     
-    # comp_version_arch.split('.')[-3] 是包含修订号的部分
-    # 例如: ['airline-x','x', '7-1', 'oe2203sp4', 'src']，取 '7-1'
+    # 例如: ['airline-0','7-1', 'oe2203sp4', 'src']，取 '7-1'
     if len(parts) >= 3:
+        # 组件名+版本号+修订号
         revision_part = '.'.join(parts[:-2])  # 'airline-x.x'
+        # 发行版+架构
         suffix = '.'.join(parts[-2:])  # '7-1.oe2203sp4.src'
-        
     else:
+        # 组件名+版本号+修订号
         revision_part = '.'.join(parts[:-1])  # 'airline-x.x'
+        # 没有发行版， 只有架构
         suffix = '.'.join(parts[-1:])  # 'src'
-        
     
-    revision_components = revision_part.split('-') # # 从修订号部分取最后两个'-'分隔的元素（版本号和修订号）
+    # 提取出修订号
+    revision_components = revision_part.split('-') 
+
     if len(revision_components) >= 3:
-        version_revision = '-'.join(revision_components[-2:])  # '7-1'
-        prefix = '-'.join(revision_components[:-2])  # 'airline-x.x'
+        # airline-0.7-1 -> 0.7-1
+        version_revision = '-'.join(revision_components[-2:])
+        # airline
+        prefix = '-'.join(revision_components[:-2])
     else:
+        # 如果只有两个元素，则没有修订号
         version_revision = '-'.join(revision_components[-1:])  # '7-1'
         prefix = '-'.join(revision_components[:-1])  # 'airline-x.x'
-    
-    
-    
-    
         
     # 组合完整版本号
     version = version_revision + '.' + suffix  # 'airline-x.x-7-1.oe2203sp4.src'
