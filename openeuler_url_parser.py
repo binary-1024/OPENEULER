@@ -32,7 +32,8 @@ def parse_openeuler_component_url(url):
     
     # 稳妥方法实现
     parts = comp_version_arch.split('.')  
-    if 'oe' in comp_version_arch:
+    # if 'oe' in comp_version_arch:
+    if 'oe' in comp_version_arch and comp_version_arch[comp_version_arch.index("oe")+1].isdigit():
         # 组件名+版本号+修订号
         revision_part = '.'.join(parts[:-2])  # 'airline-x.x'
         # 发行版+架构
