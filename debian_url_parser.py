@@ -238,6 +238,7 @@ class DebianURLParser:
         # 尝试匹配不同类型的文件
         if filename.endswith('.deb'):
             info = self._parse_binary_package(url, filename)
+
         elif filename.endswith('.dsc'):
             info =  self._parse_dsc_file(url, filename)
         elif '.orig' in filename and filename.endswith(('.tar.gz', '.tar.xz', '.tar.bz2')):
@@ -354,7 +355,7 @@ class DebianURLParser:
             version=version_str,
             architecture=None,
             distribution_type="source",
-            file_type="upstream_source",  # 签名文件归类为上游源码的一部分
+            file_type="upstream_source_sig",  # 签名文件归类为上游源码的一部分
             is_native=False,
             **version_info
         )
