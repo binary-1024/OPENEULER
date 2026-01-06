@@ -160,11 +160,12 @@ class DebianPackageInfo:
         # 基础 PURL
         purl = f"pkg:deb/debian/{self.package_name}"
 
-        # 如果有架构信息（二进制包），添加架构参数
-        if self.distribution_type == "binary" and self.architecture:
-            purl += f"?arch={self.architecture}"
-        else:
-            purl += f"?arch=src"
+        # 20260106 暂时不添加架构参数
+        # 如果有架构信息（二进制包），添加架构参数 
+        # if self.distribution_type == "binary" and self.architecture:
+        #     purl += f"?arch={self.architecture}"
+        # else:
+        #     purl += f"?arch=src"
         return purl
 
 
@@ -273,8 +274,8 @@ class DebianURLParser:
         is_native = version_info['debian_revision'] is None
 
         # 对于二进制包，version 应该包含架构信息
-        # full_version = f"{version_str}_{architecture}"
-        full_version = f"{version_str}"
+        full_version = f"{version_str}_{architecture}"
+        # full_version = f"{version_str}"
 
         return DebianPackageInfo(
             url=url,
