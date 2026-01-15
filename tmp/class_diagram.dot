@@ -1,0 +1,12 @@
+digraph class_diagram {
+    rankdir=TB;
+    size="10,8";
+    
+    node [shape=record, style=filled, fillcolor=lightblue, fontname="Arial"];
+    
+    Parser [label="{DebianURLParser|+ BINARY_PATTERN\l+ DSC_PATTERN\l+ ORIG_PATTERN\l+ DEBIAN_PATCH_PATTERN\l+ NATIVE_SOURCE_PATTERN\l|+ parse_url(url: str)\l- _parse_binary_package()\l- _parse_dsc_file()\l- _parse_orig_source()\l- _parse_debian_patch()\l- _parse_native_source()\l- _parse_version(version)\l- _parse_upstream_markers()\l- _parse_revision_markers()\l}", fillcolor=lightcyan];
+    
+    Info [label="{DebianPackageInfo|+ url: str\l+ filename: str\l+ package_name: str\l+ version: str\l+ architecture: Optional[str]\l+ epoch: Optional[str]\l+ upstream_version: str\l+ debian_revision: Optional[str]\l+ dfsg_marker: Optional[str]\l+ really_version: Optional[str]\l+ binary_rebuild: Optional[str]\l+ backport_marker: Optional[str]\l+ nmu_marker: Optional[str]\l+ ubuntu_marker: Optional[str]\l+ release_version: Optional[str]\l+ security_update: Optional[str]\l+ distribution_type: str\l+ file_type: str\l+ is_native: bool\l|+ to_dict(): Dict\l}", fillcolor=wheat];
+    
+    Parser -> Info [label="  creates  ", style=dashed, arrowhead=open];
+}

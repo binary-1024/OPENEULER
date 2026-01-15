@@ -1,0 +1,64 @@
+digraph usage_flow {
+    rankdir=TB;
+    size="12,14";
+    
+    node [shape=box, style="rounded,filled", fillcolor=lightblue, fontname="Arial"];
+    
+    start [label="用户需求", shape=ellipse, fillcolor=lightgreen];
+    choose_way [label="选择使用方式", shape=diamond, fillcolor=lightyellow];
+    
+    import [label="导入\nDebianURLParser", fillcolor=wheat];
+    create_parser [label="创建 parser 实例"];
+    call_parse [label="调用 parse_url(url)"];
+    get_info [label="获取\nDebianPackageInfo 对象"];
+    choose_format [label="选择输出格式", shape=diamond, fillcolor=lightyellow];
+    use_object [label="直接使用对象属性", fillcolor=lightgreen];
+    use_dict [label="调用 to_dict()", fillcolor=lightgreen];
+    use_json [label="json.dumps()", fillcolor=lightgreen];
+    
+    run_cli [label="运行\ndebian_parser_cli.py", fillcolor=wheat];
+    choose_input [label="选择输入方式", shape=diamond, fillcolor=lightyellow];
+    single_url [label="单个 URL\n命令行参数", fillcolor=wheat];
+    batch_file [label="批量处理\n--file 参数", fillcolor=wheat];
+    choose_output [label="选择输出格式", shape=diamond, fillcolor=lightyellow];
+    readable [label="人类可读格式\n(默认)", fillcolor=lightgreen];
+    json_output [label="JSON 格式\n--json 参数", fillcolor=lightgreen];
+    choose_filter [label="是否需要过滤?", shape=diamond, fillcolor=lightyellow];
+    filter_arch [label="按架构过滤\n--filter-arch", fillcolor=wheat];
+    filter_type [label="按类型过滤\n--filter-type", fillcolor=wheat];
+    no_filter [label="不过滤", fillcolor=wheat];
+    
+    end [label="处理业务逻辑", shape=ellipse, fillcolor=lightgreen];
+    
+    // 连接
+    start -> choose_way;
+    choose_way -> import [label="Python 库"];
+    choose_way -> run_cli [label="命令行工具"];
+    
+    import -> create_parser;
+    create_parser -> call_parse;
+    call_parse -> get_info;
+    get_info -> choose_format;
+    choose_format -> use_object [label="对象"];
+    choose_format -> use_dict [label="字典"];
+    choose_format -> use_json [label="JSON"];
+    use_object -> end;
+    use_dict -> end;
+    use_json -> end;
+    
+    run_cli -> choose_input;
+    choose_input -> single_url [label="单个"];
+    choose_input -> batch_file [label="批量"];
+    single_url -> choose_output;
+    batch_file -> choose_output;
+    choose_output -> readable [label="文本"];
+    choose_output -> json_output [label="JSON"];
+    readable -> choose_filter;
+    json_output -> choose_filter;
+    choose_filter -> filter_arch [label="架构"];
+    choose_filter -> filter_type [label="类型"];
+    choose_filter -> no_filter [label="否"];
+    filter_arch -> end;
+    filter_type -> end;
+    no_filter -> end;
+}

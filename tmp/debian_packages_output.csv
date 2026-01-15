@@ -1,0 +1,17 @@
+url,filename,package_name,package_purl,version,architecture,epoch,upstream_version,debian_revision,distribution_type,file_type,is_native,dfsg_marker,really_version,binary_rebuild,backport_marker,nmu_marker,ubuntu_marker,release_version,security_update
+https://example.com/pool/main/o/openjdk-11/openjdk-11-demo_11.0.29+7-1_s390x.deb,openjdk-11-demo_11.0.29+7-1_s390x.deb,openjdk-11-demo,pkg:deb/debian/openjdk-11-demo,11.0.29+7-1,s390x,,11.0.29+7,1,binary,binary,False,,,,,,,,
+https://example.com/pool/main/n/nginx/nginx_1.18.0-6.1_amd64.deb,nginx_1.18.0-6.1_amd64.deb,nginx,pkg:deb/debian/nginx,1.18.0-6.1,amd64,,1.18.0,6.1,binary,binary,False,,,,,,,,
+https://example.com/pool/main/d/dpkg/dpkg_1.23.3_armhf.deb,dpkg_1.23.3_armhf.deb,dpkg,pkg:deb/debian/dpkg,1.23.3,armhf,,1.23.3,,binary,binary,True,,,,,,,,
+https://example.com/pool/main/o/openssl/openssl_1.1.1n-0+deb11u5_amd64.deb,openssl_1.1.1n-0+deb11u5_amd64.deb,openssl,pkg:deb/debian/openssl,1.1.1n-0+deb11u5,amd64,,1.1.1n,0,binary,binary,False,,,,,,,deb11,u5
+https://snapshot.debian.org/archive/debian/20251220T083035Z/pool/main/d/dpkg/dpkg_1.23.3_armhf.deb,dpkg_1.23.3_armhf.deb,dpkg,pkg:deb/debian/dpkg,1.23.3,armhf,,1.23.3,,binary,binary,True,,,,,,,,
+https://example.com/pool/main/n/nginx/nginx_1.28.0-6.dsc,nginx_1.28.0-6.dsc,nginx,pkg:deb/debian/nginx,1.28.0-6,,,1.28.0,6,source,build_file,False,,,,,,,,
+https://example.com/pool/main/n/nginx/nginx_1.28.0.orig.tar.gz,nginx_1.28.0.orig.tar.gz,nginx,pkg:deb/debian/nginx,1.28.0,,,1.28.0,,source,upstream_source,False,,,,,,,,
+https://example.com/pool/main/n/nginx/nginx_1.28.0.orig.tar.gz.asc,nginx_1.28.0.orig.tar.gz.asc,nginx,pkg:deb/debian/nginx,1.28.0,,,1.28.0,,source,upstream_source,False,,,,,,,,
+https://example.com/pool/main/n/nginx/nginx_1.28.0-6.debian.tar.xz,nginx_1.28.0-6.debian.tar.xz,nginx,pkg:deb/debian/nginx,1.28.0-6,,,1.28.0,6,source,upstream_source_patch,False,,,,,,,,
+https://example.com/pool/main/d/dpkg/dpkg_1.23.3.tar.xz,dpkg_1.23.3.tar.xz,dpkg,pkg:deb/debian/dpkg,1.23.3,,,1.23.3,,source,native_source,True,,,,,,,,
+https://example.com/pool/main/d/dpkg/dpkg_1.23.3.dsc,dpkg_1.23.3.dsc,dpkg,pkg:deb/debian/dpkg,1.23.3,,,1.23.3,,source,build_file,True,,,,,,,,
+https://example.com/pool/main/p/package/package_1.2.3+dfsg1-2+deb12u1_amd64.deb,package_1.2.3+dfsg1-2+deb12u1_amd64.deb,package,pkg:deb/debian/package,1.2.3+dfsg1-2+deb12u1,amd64,,1.2.3,2,binary,binary,False,dfsg1,,,,,,deb12,u1
+https://example.com/pool/main/p/package/package_1.0+really1.0-1_amd64.deb,package_1.0+really1.0-1_amd64.deb,package,pkg:deb/debian/package,1.0+really1.0-1,amd64,,1.0,1,binary,binary,False,,1.0,,,,,,
+https://example.com/pool/main/p/package/package_1.0-1+b2_amd64.deb,package_1.0-1+b2_amd64.deb,package,pkg:deb/debian/package,1.0-1+b2,amd64,,1.0,1,binary,binary,False,,,b2,,,,,
+https://example.com/pool/main/p/package/package_2.0-1~bpo11+1_amd64.deb,package_2.0-1~bpo11+1_amd64.deb,package,pkg:deb/debian/package,2.0-1~bpo11+1,amd64,,2.0,1,binary,binary,False,,,,bpo11+1,,,,
+https://example.com/pool/main/p/package/package_1.0-1ubuntu1.1_amd64.deb,package_1.0-1ubuntu1.1_amd64.deb,package,pkg:deb/debian/package,1.0-1ubuntu1.1,amd64,,1.0,1,binary,binary,False,,,,,,ubuntu1.1,,

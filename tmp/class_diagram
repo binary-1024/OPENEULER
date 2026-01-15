@@ -1,0 +1,46 @@
+// 类关系图
+digraph {
+	rankdir=TB size="10,8"
+	node [fillcolor=lightblue fontname=Arial shape=record style=filled]
+	Parser [label="DebianURLParser|
+    + BINARY_PATTERN: re.Pattern
+    + DSC_PATTERN: re.Pattern
+    + ORIG_PATTERN: re.Pattern
+    + DEBIAN_PATCH_PATTERN: re.Pattern
+    + NATIVE_SOURCE_PATTERN: re.Pattern
+    |
+    + parse_url(url: str): DebianPackageInfo
+    - _parse_binary_package()
+    - _parse_dsc_file()
+    - _parse_orig_source()
+    - _parse_debian_patch()
+    - _parse_native_source()
+    - _parse_version(version: str): Dict
+    - _parse_upstream_markers()
+    - _parse_revision_markers()
+    " fillcolor=lightcyan]
+	Info [label="DebianPackageInfo|
+    + url: str
+    + filename: str
+    + package_name: str
+    + version: str
+    + architecture: Optional[str]
+    + epoch: Optional[str]
+    + upstream_version: str
+    + debian_revision: Optional[str]
+    + dfsg_marker: Optional[str]
+    + really_version: Optional[str]
+    + binary_rebuild: Optional[str]
+    + backport_marker: Optional[str]
+    + nmu_marker: Optional[str]
+    + ubuntu_marker: Optional[str]
+    + release_version: Optional[str]
+    + security_update: Optional[str]
+    + distribution_type: str
+    + file_type: str
+    + is_native: bool
+    |
+    + to_dict(): Dict
+    " fillcolor=wheat]
+	Parser -> Info [label="  creates  " arrowhead=open style=dashed]
+}

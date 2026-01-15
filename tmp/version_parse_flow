@@ -1,0 +1,64 @@
+// 版本号解析流程
+digraph {
+	rankdir=TB size="10,14"
+	node [fillcolor=lightblue fontname=Arial shape=box style="rounded,filled"]
+	start [label="输入版本字符串
+例: 1:1.18.0-6.1+deb11u5" fillcolor=lightgreen shape=ellipse]
+	check_epoch [label="是否包含 \":\" ?" fillcolor=lightyellow shape=diamond]
+	extract_epoch [label="提取纪元号
+epoch = 1" fillcolor=wheat]
+	no_epoch [label="epoch = None" fillcolor=wheat]
+	check_revision [label="是否包含 \"-\" ?" fillcolor=lightyellow shape=diamond]
+	split_version [label="按最后一个 \"-\" 分割
+左: 上游版本
+右: 修订号"]
+	no_revision [label="上游版本 = 完整版本
+修订号 = None" fillcolor=wheat]
+	parse_upstream [label="解析上游版本
+检查特殊标识" fillcolor=lightcyan]
+	check_dfsg [label="包含 +dfsg ?" fillcolor=lightyellow shape=diamond]
+	extract_dfsg [label="提取 DFSG 标识
+dfsg1, dfsg2..." fillcolor=wheat]
+	check_really [label="包含 +really ?" fillcolor=lightyellow shape=diamond]
+	extract_really [label="提取 Really 版本
+真正的版本号" fillcolor=wheat]
+	parse_revision_detail [label="解析修订号
+检查特殊标识" fillcolor=lightcyan]
+	check_build [label="包含 +b ?" fillcolor=lightyellow shape=diamond]
+	extract_build [label="提取二进制重制编号
+b1, b2..." fillcolor=wheat]
+	check_bpo [label="包含 ~bpo ?" fillcolor=lightyellow shape=diamond]
+	extract_bpo [label="提取 Backports 标识
+bpo11+1" fillcolor=wheat]
+	check_security [label="包含 deb*u* ?" fillcolor=lightyellow shape=diamond]
+	extract_security [label="提取发行版版本
+和安全更新编号
+deb11, u5" fillcolor=wheat]
+	end [label="返回版本信息字典" fillcolor=lightgreen shape=ellipse]
+	start -> check_epoch
+	check_epoch -> extract_epoch [label="是"]
+	check_epoch -> no_epoch [label="否"]
+	extract_epoch -> check_revision
+	no_epoch -> check_revision
+	check_revision -> split_version [label="是"]
+	check_revision -> no_revision [label="否"]
+	split_version -> parse_upstream
+	no_revision -> end
+	parse_upstream -> check_dfsg
+	check_dfsg -> extract_dfsg [label="是"]
+	check_dfsg -> check_really [label="否"]
+	extract_dfsg -> check_really
+	check_really -> extract_really [label="是"]
+	check_really -> parse_revision_detail [label="否"]
+	extract_really -> parse_revision_detail
+	parse_revision_detail -> check_build
+	check_build -> extract_build [label="是"]
+	check_build -> check_bpo [label="否"]
+	extract_build -> check_bpo
+	check_bpo -> extract_bpo [label="是"]
+	check_bpo -> check_security [label="否"]
+	extract_bpo -> check_security
+	check_security -> extract_security [label="是"]
+	check_security -> end [label="否"]
+	extract_security -> end
+}

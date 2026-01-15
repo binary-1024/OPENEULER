@@ -1,0 +1,357 @@
+step1 获取 cves 列表
+
+DROP TABLE IF EXISTS tmp_jwh_github_purl_versions;
+CREATE TABLE tmp_jwh_github_purl_versions AS
+WITH a AS (
+  SELECT DISTINCT
+    md5sum_of_purl,
+    purl,
+    version
+  FROM dws.dws_vul_cve_purl_new
+  -- WHERE lower(regexp_extract(purl,'^pkg:([^/]+)',1)) = 'github'     -- 从 purl 提取生态
+),
+b AS (
+  SELECT
+    md5sum_of_purl,
+    cve,
+    purl,
+    version
+  FROM dws.dws_vul_cve_purl_new
+  WHERE cve RLIKE '^CVE-'                                           -- 更鲁棒
+    AND version NOT RLIKE '^(>=|<=|<)\\s?'                          -- 更鲁棒
+    AND purl IS NOT NULL
+    AND version IS NOT NULL
+)
+SELECT
+  a.md5sum_of_purl          AS md5_purl_version,
+  a.purl,
+  a.version,
+  concat_ws(';', sort_array(collect_set(b.cve))) AS cves
+FROM a
+JOIN b
+  ON a.md5sum_of_purl = b.md5sum_of_purl
+GROUP BY
+  a.md5sum_of_purl, a.purl, a.version;
+
+ 
+step2 关联 取出 没有修复建议的 cve
+
+-- 1) 先建结果表（按需改存储格式）
+DROP TABLE IF EXISTS tmp_jwh_github_purl_versions_unfixed0;
+CREATE TABLE tmp_jwh_github_purl_versions_unfixed0 (
+  md5_purl_version STRING,
+  purl             STRING,
+  version          STRING,
+  cves             STRING
+)
+STORED AS ORC;
+
+-- 2) 装数：拆 -> 关联(unfixed=0) -> 聚合回拼
+INSERT OVERWRITE TABLE tmp_jwh_github_purl_versions_unfixed0
+SELECT
+  g.md5_purl_version,
+  g.purl,
+  g.version,
+  CASE
+    WHEN size(g.cve_set) > 0
+      THEN concat_ws(';', sort_array(g.cve_set))
+    ELSE NULL
+  END AS cves
+FROM (
+  SELECT
+    j.md5_purl_version,
+    j.purl,
+    j.version,
+    collect_set(j.cve_num) AS cve_set
+  FROM (
+    SELECT
+      e.md5_purl_version,
+      e.purl,
+      e.version,
+      s.cve_num                      -- 仅当 unfixed=0 匹配成功才有值
+    FROM (
+      SELECT
+        v.md5_purl_version,          -- ⚠ 若你的源表列名是 md5sum_of_purl，请把此处及下方统一替换
+        v.purl,
+        v.version,
+        upper(trim(cve)) AS cve
+      FROM tmp_jwh_github_purl_versions v
+      LATERAL VIEW OUTER explode(
+        split(coalesce(v.cves, ''), '\\s*;\\s*')
+      ) e AS cve
+    ) e
+    LEFT JOIN tmp_jwh_cve_unfixed_status s
+      ON e.cve = upper(s.cve_num)
+     AND s.unfixed = 0
+  ) j
+  GROUP BY j.md5_purl_version, j.purl, j.version
+) g;
+
+
+
+
+
+CREATE TABLE ods.ods_unfixed_vul_github (
+    purl                STRING        COMMENT '组件唯一标识',
+    version             STRING        COMMENT '组件版本',
+    unfixed_cves        ARRAY<STRING> COMMENT '未修复的 CVE 列表',
+    unfixed_cves_count  INT           COMMENT '未修复漏洞数量'
+)
+COMMENT '每个组件版本对应的未修复漏洞汇总表'
+ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe'
+WITH SERDEPROPERTIES (
+  'serialization.format' = ',',
+  'field.delim' = ','
+)
+STORED AS ORC;
+
+
+CREATE TABLE cve_unfixed_status AS
+SELECT
+    cve_num,
+    CASE
+        WHEN 
+            ( (patch IS NULL OR TRIM(patch) = '' OR patch = '[]') AND
+              (workaround IS NULL OR TRIM(workaround) = '' OR workaround = '[]') AND
+              (cnnvd_patches IS NULL OR TRIM(cnnvd_patches) = '' OR cnnvd_patches = '[]') AND
+              (fix_version IS NULL OR TRIM(fix_version) = '' OR fix_version = '[]') )
+        THEN 0
+        ELSE 1
+    END AS unfixed
+FROM vulnerability_knowledge;
+
+drop table tmp_jwh_cve_unfixed_status;
+CREATE TABLE tmp_jwh_cve_unfixed_status (
+  cve_num STRING COMMENT 'CVE 编号',
+  unfixed INT COMMENT '是否未修复：0=已修复/无修复信息, 1=未修复'
+)
+COMMENT 'CVE 修复状态表（从 MySQL 同步）'
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY '\t';
+
+DESCRIBE FORMATTED tmp_jwh_cve_unfixed_status;
+
+LOAD DATA LOCAL INPATH '/home/dolphinscheduler/data/cleanource_sca_test_cve_unfixed_status.csv' OVERWRITE INTO TABLE tmp_jwh_cve_unfixed_status;
+
+
+
+-- 方案1：重建为 TEXTFILE
+DROP TABLE IF EXISTS default.tmp_jwh_cve_unfixed_status;
+
+CREATE TABLE default.tmp_jwh_cve_unfixed_status (
+  cve_num STRING,
+  unfixed INT
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n'
+STORED AS TEXTFILE;
+
+-- 然后就可以直接：
+LOAD DATA LOCAL INPATH '/home/dolphinscheduler/data/cleanource_sca_test_cve_unfixed_status.csv'
+OVERWRITE INTO TABLE default.tmp_jwh_cve_unfixed_status;
+
+
+
+
+
+
+CREATE TABLE IF NOT EXISTS tmp_jwh_github_purl_versions_unfixed0 AS
+SELECT
+  v.md5_purl_version,
+  v.purl,
+  v.version,
+  CASE
+    WHEN size(collect_set(s.cve_num)) > 0
+      THEN concat_ws(';', sort_array(collect_set(s.cve_num)))
+    ELSE NULL
+  END AS cves
+FROM tmp_jwh_github_purl_versions v
+LATERAL VIEW OUTER explode(
+  split(COALESCE(v.cves, ''), '\\s*;\\s*')
+) e AS cve
+LEFT JOIN tmp_jwh_cve_unfixed_status s
+  ON upper(trim(e.cve)) = upper(s.cve_num)
+ AND s.unfixed = 0
+GROUP BY v.MD5, v.purl, v.version;
+
+
+
+DROP TABLE IF EXISTS tmp_jwh_github_purl_versions_unfixed0;
+
+CREATE TABLE tmp_jwh_github_purl_versions_unfixed0 AS
+SELECT
+  g.md5_purl_version,
+  g.purl,
+  g.version,
+  CASE
+    WHEN size(g.cve_set) > 0
+      THEN concat_ws(';', sort_array(g.cve_set))
+    ELSE NULL
+  END AS cves
+FROM (
+  SELECT
+    j.md5_purl_version,
+    j.purl,
+    j.version,
+    collect_set(j.cve_num) AS cve_set
+  FROM (
+    SELECT
+      e.md5_purl_version,
+      e.purl,
+      e.version,
+      s.cve_num
+    FROM (
+      SELECT
+        v.md5_purl_version,
+        v.purl,
+        v.version,
+        upper(trim(cve)) AS cve
+      FROM tmp_jwh_github_purl_versions v
+      LATERAL VIEW OUTER explode(
+        split(coalesce(v.cves, ''), '\\s*;\\s*')
+      ) e AS cve
+    ) e
+    LEFT JOIN tmp_jwh_cve_unfixed_status s
+      ON e.cve = upper(s.cve_num)
+     AND s.unfixed = 0
+  ) j
+  GROUP BY j.md5_purl_version, j.purl, j.version
+) g;
+
+
+
+DROP TABLE IF EXISTS tmp_jwh_github_purl_versions_unfixed0;
+CREATE TABLE tmp_jwh_github_purl_versions_unfixed0 AS
+WITH exploded AS (          -- ① 先把 ; 分隔的 cves 拆成多行
+  SELECT
+    v.md5_purl_version,
+    v.purl,
+    v.version,
+    upper(trim(cve)) AS cve
+  FROM tmp_jwh_github_purl_versions v
+  LATERAL VIEW OUTER explode(
+    split(COALESCE(v.cves, ''), '\\s*;\\s*')
+  ) e AS cve
+),
+joined AS (                 -- ② 再与状态表关联，仅保留 unfixed = 0
+  SELECT
+    e.md5_purl_version,
+    e.purl,
+    e.version,
+    s.cve_num               -- 匹配成功则有值；否则为 NULL
+  FROM exploded e
+  LEFT JOIN tmp_jwh_cve_unfixed_status s
+    ON e.cve = upper(s.cve_num)
+   AND s.unfixed = 0
+)
+-- ③ 最后按组件版本聚合，去重排序后用 ; 拼回
+SELECT
+  md5_purl_version,
+  purl,
+  version,
+  CASE
+    WHEN size(collect_set(cve_num)) > 0
+      THEN concat_ws(';', sort_array(collect_set(cve_num)))
+    ELSE NULL
+  END AS cves
+FROM joined
+GROUP BY md5_purl_version, purl, version;
+
+
+-- 1) 先建结果表（按需改存储格式）
+DROP TABLE IF EXISTS tmp_jwh_github_purl_versions_unfixed0;
+CREATE TABLE tmp_jwh_github_purl_versions_unfixed0 (
+  md5_purl_version STRING,
+  purl             STRING,
+  version          STRING,
+  cves             STRING
+)
+STORED AS ORC;
+
+-- 2) 装数：拆 -> 关联(unfixed=0) -> 聚合回拼
+INSERT OVERWRITE TABLE tmp_jwh_github_purl_versions_unfixed0
+SELECT
+  g.md5_purl_version,
+  g.purl,
+  g.version,
+  CASE
+    WHEN size(g.cve_set) > 0
+      THEN concat_ws(';', sort_array(g.cve_set))
+    ELSE NULL
+  END AS cves
+FROM (
+  SELECT
+    j.md5_purl_version,
+    j.purl,
+    j.version,
+    collect_set(j.cve_num) AS cve_set
+  FROM (
+    SELECT
+      e.md5_purl_version,
+      e.purl,
+      e.version,
+      s.cve_num                      -- 仅当 unfixed=0 匹配成功才有值
+    FROM (
+      SELECT
+        v.md5_purl_version,          -- ⚠ 若你的源表列名是 md5sum_of_purl，请把此处及下方统一替换
+        v.purl,
+        v.version,
+        upper(trim(cve)) AS cve
+      FROM tmp_jwh_github_purl_versions v
+      LATERAL VIEW OUTER explode(
+        split(coalesce(v.cves, ''), '\\s*;\\s*')
+      ) e AS cve
+    ) e
+    LEFT JOIN tmp_jwh_cve_unfixed_status s
+      ON e.cve = upper(s.cve_num)
+     AND s.unfixed = 0
+  ) j
+  GROUP BY j.md5_purl_version, j.purl, j.version
+) g;
+
+
+
+wfp 原始数据包是 16t， 做出的 wfp 是 3 个 t 
+
+
+
+
+
+DROP TABLE IF EXISTS tmp_jwh_github_purl_versions_unfixed;
+
+CREATE TABLE tmp_jwh_github_purl_versions_unfixed(
+  md5_purl_version STRING,
+  purl             STRING,
+  version          STRING,
+  cve              STRING
+)
+STORED AS ORC;   -- 如需 TEXTFILE/Parquet 按需替换
+
+
+INSERT OVERWRITE TABLE tmp_jwh_github_purl_versions_unfixed
+SELECT DISTINCT                      -- 如不需要去重可去掉 DISTINCT
+  e.md5_purl_version,
+  e.purl,
+  e.version,
+  s.cve_num          AS cve
+FROM (
+  -- 先把分号分隔的 cves 拆成多行；放在子查询里以避免 JOIN+LATERAL VIEW 限制
+  SELECT
+    v.md5_purl_version,
+    v.purl,
+    v.version,
+    upper(trim(cve)) AS cve
+  FROM tmp_jwh_github_purl_versions v
+  LATERAL VIEW OUTER explode(
+    split(coalesce(v.cves, ''), '\\s*;\\s*')
+  ) e AS cve
+) e
+JOIN tmp_jwh_cve_unfixed_status s
+  ON e.cve = upper(s.cve_num)
+ AND s.unfixed = 0
+WHERE e.cve <> '';
+
+
+
+

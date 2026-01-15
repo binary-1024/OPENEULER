@@ -1,0 +1,56 @@
+// Debian URL 解析器主流程
+digraph {
+	rankdir=TB size="12,16"
+	node [fillcolor=lightblue fontname=Arial shape=box style="rounded,filled"]
+	start [label="开始
+输入 Debian URL" fillcolor=lightgreen shape=ellipse]
+	extract [label="从 URL 提取文件名"]
+	check_valid [label="文件名是否有效?" fillcolor=lightyellow shape=diamond]
+	error1 [label="抛出 ValueError
+无法提取文件名" fillcolor=lightcoral]
+	check_type [label="判断文件类型" fillcolor=lightcyan]
+	type_deb [label=".deb 文件
+解析二进制包" fillcolor=wheat]
+	type_dsc [label=".dsc 文件
+解析构建文件" fillcolor=wheat]
+	type_orig [label=".orig.tar.*
+解析上游源码" fillcolor=wheat]
+	type_debian [label=".debian.tar.*
+解析 Debian 补丁" fillcolor=wheat]
+	type_native [label=".tar.*
+解析自研源码" fillcolor=wheat]
+	error2 [label="不支持的文件类型" fillcolor=lightcoral]
+	extract_info [label="提取包名、版本、架构"]
+	parse_version [label="解析版本号" fillcolor=lightcyan]
+	parse_epoch [label="提取纪元号 epoch"]
+	parse_upstream [label="提取上游版本号"]
+	parse_revision [label="提取 Debian 修订号"]
+	parse_markers [label="解析特殊标识
+(DFSG/Really/Backports等)"]
+	check_native [label="判断是否自研组件"]
+	create_obj [label="创建 DebianPackageInfo 对象" fillcolor=lightgreen]
+	end [label="返回解析结果" fillcolor=lightgreen shape=ellipse]
+	start -> extract
+	extract -> check_valid
+	check_valid -> error1 [label="否"]
+	check_valid -> check_type [label="是"]
+	check_type -> type_deb [label=".deb"]
+	check_type -> type_dsc [label=".dsc"]
+	check_type -> type_orig [label=".orig.tar.*"]
+	check_type -> type_debian [label=".debian.tar.*"]
+	check_type -> type_native [label=".tar.*"]
+	check_type -> error2 [label="其他"]
+	type_deb -> extract_info
+	type_dsc -> extract_info
+	type_orig -> extract_info
+	type_debian -> extract_info
+	type_native -> extract_info
+	extract_info -> parse_version
+	parse_version -> parse_epoch
+	parse_epoch -> parse_upstream
+	parse_upstream -> parse_revision
+	parse_revision -> parse_markers
+	parse_markers -> check_native
+	check_native -> create_obj
+	create_obj -> end
+}

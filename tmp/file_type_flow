@@ -1,0 +1,61 @@
+// 文件类型判断流程
+digraph {
+	rankdir=TB size="10,12"
+	node [fillcolor=lightblue fontname=Arial shape=box style="rounded,filled"]
+	start [label="获取文件名" fillcolor=lightgreen shape=ellipse]
+	check_ext [label="检查文件扩展名" fillcolor=lightyellow shape=diamond]
+	deb_branch [label=".deb 文件" fillcolor=wheat]
+	deb_regex [label="正则匹配:
+package_version_arch.deb"]
+	deb_result [label="分发类型: 二进制
+文件类型: 二进制" fillcolor=lightgreen]
+	dsc_branch [label=".dsc 文件" fillcolor=wheat]
+	dsc_regex [label="正则匹配:
+package_version.dsc"]
+	dsc_result [label="分发类型: 源码
+文件类型: 构建文件" fillcolor=lightgreen]
+	orig_branch [label=".orig.tar.* 文件" fillcolor=wheat]
+	orig_check [label="以 .asc 结尾?" fillcolor=lightyellow shape=diamond]
+	orig_sig [label="上游源码签名" fillcolor=wheat]
+	orig_source [label="上游源码" fillcolor=wheat]
+	orig_result [label="分发类型: 源码
+文件类型: 上游源码" fillcolor=lightgreen]
+	debian_branch [label=".debian.tar.* 文件" fillcolor=wheat]
+	debian_result [label="分发类型: 源码
+文件类型: 上游源码补丁" fillcolor=lightgreen]
+	tar_branch [label=".tar.* 文件" fillcolor=wheat]
+	tar_check [label="包含 orig 或 debian?" fillcolor=lightyellow shape=diamond]
+	tar_upstream [label="上游组件源码" fillcolor=wheat]
+	tar_native [label="自研组件源码" fillcolor=wheat]
+	tar_result [label="分发类型: 源码
+文件类型: 自研源码" fillcolor=lightgreen]
+	error [label="不支持的文件类型
+抛出 ValueError" fillcolor=lightcoral]
+	end [label="继续解析" fillcolor=lightgreen shape=ellipse]
+	start -> check_ext
+	check_ext -> deb_branch [label=".deb"]
+	check_ext -> dsc_branch [label=".dsc"]
+	check_ext -> orig_branch [label=".orig.tar.*"]
+	check_ext -> debian_branch [label=".debian.tar.*"]
+	check_ext -> tar_branch [label=".tar.*"]
+	check_ext -> error [label="其他"]
+	deb_branch -> deb_regex
+	deb_regex -> deb_result
+	deb_result -> end
+	dsc_branch -> dsc_regex
+	dsc_regex -> dsc_result
+	dsc_result -> end
+	orig_branch -> orig_check
+	orig_check -> orig_sig [label="是"]
+	orig_check -> orig_source [label="否"]
+	orig_sig -> orig_result
+	orig_source -> orig_result
+	orig_result -> end
+	debian_branch -> debian_result
+	debian_result -> end
+	tar_branch -> tar_check
+	tar_check -> tar_upstream [label="是"]
+	tar_check -> tar_native [label="否"]
+	tar_native -> tar_result
+	tar_result -> end
+}
