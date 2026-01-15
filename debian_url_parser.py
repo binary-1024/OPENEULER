@@ -172,50 +172,70 @@ class DebianPackageInfo:
 class DebianURLParser:
     """Debian URL 解析器"""
 
-    # 二进制包文件名正则（.deb 文件）
-    # 格式: <package>_<version>_<arch>.deb
+    # 二进制包文件名正则（.deb 和 .udeb 文件）
+    # 格式: <package>_<version>_<arch>.deb 或 <package>_<version>_<arch>.udeb
+    # .udeb 是 Debian 安装器使用的微型包
     BINARY_PATTERN = re.compile(
         # 包名是第一个_之前的内容
         # +？ 非贪婪匹配保证了遇到第一个下划线停止
-        # 包名可以包含：字母、数字、加号、点号、连字符、波浪号
-        r'^(?P<package>[a-z0-9][a-z0-9+.~-]+?)_'
+        # 包名可以包含：字母(大小写)、数字、加号、点号、连字符、波浪号
+        r'^(?P<package>[a-zA-Z0-9][a-zA-Z0-9+.~-]+?)_'
         # 版本是第一个_到第二个_之间的内容
         r'(?P<version>.+?)_'
-        # 架构要用最后一个下划线到.deb等文件后缀名之间的内容
-        r'(?P<arch>[a-z0-9-]+)\.deb$'
+        # 架构要用最后一个下划线到.deb/.udeb等文件后缀名之间的内容
+        r'(?P<arch>[a-z0-9-]+)\.(?:deb|udeb)$'
     )
+
+    # 老式二进制包文件名正则（无架构后缀）
+    # 格式: <package>_<version>.deb
+    # 在 Debian 2.x (slink, potato) 时代使用，架构信息在URL路径中
+    OLD_BINARY_PATTERN = re.compile(
+        r'^(?P<package>[a-zA-Z0-9][a-zA-Z0-9+.~-]+?)_'
+        r'(?P<version>.+?)\.(?:deb|udeb)$'
+    )
+
+    # 从URL路径中提取架构信息的正则
+    # 匹配 binary-<arch> 或 binary-<os>-<arch> 格式
+    ARCH_FROM_PATH_PATTERN = re.compile(r'/binary-([a-z0-9-]+)/')
 
 
     # 源码包构建正则文件名
     # 构建文件: <package>_<version>.dsc
     DSC_PATTERN = re.compile(
-        r'^(?P<package>[a-z0-9][a-z0-9+.~-]+?)_'
+        r'^(?P<package>[a-zA-Z0-9][a-zA-Z0-9+.~-]+?)_'
         r'(?P<version>.+?)\.dsc$'
     )
 
     # 上游源码: <package>_<version>.orig.tar.(gz|xz|bz2)
     # 或 <package>_<version>.orig-<component>.tar.(gz|xz|bz2) (多源码包)
     ORIG_PATTERN = re.compile(
-        r'^(?P<package>[a-z0-9][a-z0-9+.~-]+?)_'
+        r'^(?P<package>[a-zA-Z0-9][a-zA-Z0-9+.~-]+?)_'
         r'(?P<version>.+?)\.orig(?:-[a-z0-9]+)?\.tar\.(gz|xz|bz2)$'
     )
 
     # 上游源码签名: <package>_<version>.orig.tar.(gz|xz|bz2).asc
     # 或 <package>_<version>.orig-<component>.tar.(gz|xz|bz2).asc
     ORIG_SIG_PATTERN = re.compile(
-        r'^(?P<package>[a-z0-9][a-z0-9+.~-]+?)_'
+        r'^(?P<package>[a-zA-Z0-9][a-zA-Z0-9+.~-]+?)_'
         r'(?P<version>.+?)\.orig(?:-[a-z0-9]+)?\.tar\.(gz|xz|bz2)\.asc$'
     )
 
-    # Debian 补丁源码: <package>_<version>.debian.tar.(gz|xz)
+    # Debian 补丁源码: <package>_<version>.debian.tar.(gz|xz) 或老式 .diff.gz
     DEBIAN_PATCH_PATTERN = re.compile(
-        r'^(?P<package>[a-z0-9][a-z0-9+.~-]+?)_'
+        r'^(?P<package>[a-zA-Z0-9][a-zA-Z0-9+.~-]+?)_'
         r'(?P<version>.+?)\.debian\.tar\.(gz|xz)$'
+    )
+
+    # 老式 Debian 补丁格式: <package>_<version>.diff.gz
+    # 这是 Debian 3.0 (quilt) 格式之前使用的补丁格式
+    OLD_DIFF_PATTERN = re.compile(
+        r'^(?P<package>[a-zA-Z0-9][a-zA-Z0-9+.~-]+?)_'
+        r'(?P<version>.+?)\.diff\.gz$'
     )
 
     # 自研组件源码: <package>_<version>.tar.(gz|xz)（不含 orig 或 debian）
     NATIVE_SOURCE_PATTERN = re.compile(
-        r'^(?P<package>[a-z0-9][a-z0-9+.~-]+?)_'
+        r'^(?P<package>[a-zA-Z0-9][a-zA-Z0-9+.~-]+?)_'
         r'(?P<version>.+?)\.tar\.(gz|xz|bz2)$'
     )
 
@@ -240,7 +260,7 @@ class DebianURLParser:
             raise ValueError(f"无法从 URL 中提取文件名: {url}")
         info = None
         # 尝试匹配不同类型的文件
-        if filename.endswith('.deb'):
+        if filename.endswith(('.deb', '.udeb')):
             info = self._parse_binary_package(url, filename)
         elif filename.endswith('.dsc'):
             info =  self._parse_dsc_file(url, filename)
@@ -252,6 +272,9 @@ class DebianURLParser:
             info = self._parse_orig_signature(url, filename)
         elif '.debian.tar.' in filename:
             info = self._parse_debian_patch(url, filename)
+        elif filename.endswith('.diff.gz'):
+            # 处理老式 Debian 补丁格式
+            info = self._parse_old_diff_patch(url, filename)
         elif filename.endswith(('.tar.gz', '.tar.xz', '.tar.bz2')):
             info = self._parse_native_source(url, filename)
         else:
@@ -260,14 +283,33 @@ class DebianURLParser:
         return info
 
     def _parse_binary_package(self, url: str, filename: str) -> DebianPackageInfo:
-        """解析二进制包（.deb 文件）"""
+        """解析二进制包（.deb 和 .udeb 文件）"""
+        # 先尝试匹配现代格式（包含架构）
         match = self.BINARY_PATTERN.match(filename)
-        if not match:
-            raise ValueError(f"无法解析二进制包文件名: {filename}")
 
-        package_name = match.group('package')
-        version_str = match.group('version')
-        architecture = match.group('arch')
+        if match:
+            # 现代格式: package_version_arch.deb
+            package_name = match.group('package')
+            version_str = match.group('version')
+            architecture = match.group('arch')
+        else:
+            # 尝试匹配老式格式（无架构后缀）
+            old_match = self.OLD_BINARY_PATTERN.match(filename)
+            if not old_match:
+                raise ValueError(f"无法解析二进制包文件名: {filename}")
+
+            # 老式格式: package_version.deb
+            package_name = old_match.group('package')
+            version_str = old_match.group('version')
+
+            # 从URL路径中提取架构信息
+            arch_match = self.ARCH_FROM_PATH_PATTERN.search(url)
+            if arch_match:
+                # 提取到的可能是 i386 或 kfreebsd-i386 等格式
+                architecture = arch_match.group(1)
+            else:
+                # 如果URL中也没有架构信息，使用unknown
+                architecture = 'unknown'
 
         # 解析版本号
         version_info = self._parse_version(version_str)
@@ -365,6 +407,33 @@ class DebianURLParser:
         match = self.DEBIAN_PATCH_PATTERN.match(filename)
         if not match:
             raise ValueError(f"无法解析 Debian 补丁文件名: {filename}")
+
+        package_name = match.group('package')
+        version_str = match.group('version')
+
+        version_info = self._parse_version(version_str)
+
+        return DebianPackageInfo(
+            url=url,
+            filename=filename,
+            package_name=package_name,
+            version=version_str,
+            architecture=None,
+            distribution_type="source",
+            file_type="upstream_source_patch",
+            is_native=False,  # 有补丁说明是上游组件
+            **version_info
+        )
+
+    def _parse_old_diff_patch(self, url: str, filename: str) -> DebianPackageInfo:
+        """解析老式 Debian 补丁文件（.diff.gz 文件）
+
+        这是 Debian 3.0 (quilt) 格式之前使用的补丁格式。
+        在 2008 年之前的 Debian 版本中很常见。
+        """
+        match = self.OLD_DIFF_PATTERN.match(filename)
+        if not match:
+            raise ValueError(f"无法解析老式 Debian 补丁文件名: {filename}")
 
         package_name = match.group('package')
         version_str = match.group('version')
