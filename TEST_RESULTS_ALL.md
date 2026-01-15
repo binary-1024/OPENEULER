@@ -1,6 +1,6 @@
 # Debian URL Parser - 完整测试报告
 
-**测试时间**: 2026년  1월 15일 목요일 14시 03분 04초 CST
+**测试时间**: Tue Jan  6 05:34:30 UTC 2026
 
 ---
 
@@ -15,42 +15,42 @@
 
 | # | 包名 | 版本 | PURL | 架构 |
 |---|------|------|------|------|
-| 1 | dpkg | 1.23.3_armhf | pkg:deb/debian/dpkg | armhf |
-| 2 | abigail-tools-dbgsym | 2.9-1_amd64 | pkg:deb/debian/abigail-tools-dbgsym | amd64 |
-| 3 | abigail-tools-dbgsym | 2.9-1_i386 | pkg:deb/debian/abigail-tools-dbgsym | i386 |
-| 4 | nginx | 1.18.0-6.1_amd64 | pkg:deb/debian/nginx | amd64 |
-| 5 | nginx | 1.18.0-6.1_i386 | pkg:deb/debian/nginx | i386 |
-| 6 | nginx | 1.18.0-6.1_arm64 | pkg:deb/debian/nginx | arm64 |
-| 7 | dpkg | 1.23.3_armhf | pkg:deb/debian/dpkg | armhf |
-| 8 | openjdk-11-demo | 11.0.29+7-1_s390x | pkg:deb/debian/openjdk-11-demo | s390x |
-| 9 | openssl | 1.1.1n-0+deb11u5_amd64 | pkg:deb/debian/openssl | amd64 |
-| 10 | package | 1.2.3+dfsg1-2+deb12u1_amd64 | pkg:deb/debian/package | amd64 |
-| 11 | nginx | 1.28.0-6 | pkg:deb/debian/nginx | N/A |
-| 12 | nginx | 1.28.0 | pkg:deb/debian/nginx | N/A |
-| 13 | nginx | 1.28.0 | pkg:deb/debian/nginx | N/A |
-| 14 | nginx | 1.28.0-6 | pkg:deb/debian/nginx | N/A |
-| 15 | dpkg | 1.23.3 | pkg:deb/debian/dpkg | N/A |
-| 16 | dpkg | 1.23.3 | pkg:deb/debian/dpkg | N/A |
-| 17 | package | 1.2.3+dfsg1-2+deb12u1_amd64 | pkg:deb/debian/package | amd64 |
-| 18 | package | 1.0+really1.0-1_amd64 | pkg:deb/debian/package | amd64 |
-| 19 | package | 1.0-1+b2_amd64 | pkg:deb/debian/package | amd64 |
-| 20 | package | 2.0-1~bpo11+1_amd64 | pkg:deb/debian/package | amd64 |
-| 21 | package | 1.0-1ubuntu1.1_amd64 | pkg:deb/debian/package | amd64 |
-| 22 | openjdk-11-jre | 11.0.24+8-1_amd64 | pkg:deb/debian/openjdk-11-jre | amd64 |
-| 23 | openjdk-17-jdk | 17.0.12+7-2_amd64 | pkg:deb/debian/openjdk-17-jdk | amd64 |
-| 24 | lib-foo-dev | 1.0-1_amd64 | pkg:deb/debian/lib-foo-dev | amd64 |
-| 25 | lib.foo | 1.0-1_amd64 | pkg:deb/debian/lib.foo | amd64 |
-| 26 | python3.11 | 3.11.2-1_amd64 | pkg:deb/debian/python3.11 | amd64 |
-| 27 | linux-image | 2:5.10.0-1_amd64 | pkg:deb/debian/linux-image | amd64 |
-| 28 | nodejs | 18.0.0 | pkg:deb/debian/nodejs | N/A |
-| 29 | nodejs | 18.0.0 | pkg:deb/debian/nodejs | N/A |
-| 30 | package | 1.0~rc1-1_amd64 | pkg:deb/debian/package | amd64 |
-| 31 | package | 1.0~beta2-1_amd64 | pkg:deb/debian/package | amd64 |
-| 32 | package | 1.0~alpha1-1_amd64 | pkg:deb/debian/package | amd64 |
+| 1 | dpkg | 1.23.3 | pkg:deb/debian/dpkg?arch=armhf | armhf |
+| 2 | abigail-tools-dbgsym | 2.9-1 | pkg:deb/debian/abigail-tools-dbgsym?arch=amd64 | amd64 |
+| 3 | abigail-tools-dbgsym | 2.9-1 | pkg:deb/debian/abigail-tools-dbgsym?arch=i386 | i386 |
+| 4 | nginx | 1.18.0-6.1 | pkg:deb/debian/nginx?arch=amd64 | amd64 |
+| 5 | nginx | 1.18.0-6.1 | pkg:deb/debian/nginx?arch=i386 | i386 |
+| 6 | nginx | 1.18.0-6.1 | pkg:deb/debian/nginx?arch=arm64 | arm64 |
+| 7 | dpkg | 1.23.3 | pkg:deb/debian/dpkg?arch=armhf | armhf |
+| 8 | openjdk-11-demo | 11.0.29+7-1 | pkg:deb/debian/openjdk-11-demo?arch=s390x | s390x |
+| 9 | openssl | 1.1.1n-0+deb11u5 | pkg:deb/debian/openssl?arch=amd64 | amd64 |
+| 10 | package | 1.2.3+dfsg1-2+deb12u1 | pkg:deb/debian/package?arch=amd64 | amd64 |
+| 11 | nginx | 1.28.0-6 | pkg:deb/debian/nginx?arch=src | N/A |
+| 12 | nginx | 1.28.0 | pkg:deb/debian/nginx?arch=src | N/A |
+| 13 | nginx | 1.28.0 | pkg:deb/debian/nginx?arch=src | N/A |
+| 14 | nginx | 1.28.0-6 | pkg:deb/debian/nginx?arch=src | N/A |
+| 15 | dpkg | 1.23.3 | pkg:deb/debian/dpkg?arch=src | N/A |
+| 16 | dpkg | 1.23.3 | pkg:deb/debian/dpkg?arch=src | N/A |
+| 17 | package | 1.2.3+dfsg1-2+deb12u1 | pkg:deb/debian/package?arch=amd64 | amd64 |
+| 18 | package | 1.0+really1.0-1 | pkg:deb/debian/package?arch=amd64 | amd64 |
+| 19 | package | 1.0-1+b2 | pkg:deb/debian/package?arch=amd64 | amd64 |
+| 20 | package | 2.0-1~bpo11+1 | pkg:deb/debian/package?arch=amd64 | amd64 |
+| 21 | package | 1.0-1ubuntu1.1 | pkg:deb/debian/package?arch=amd64 | amd64 |
+| 22 | openjdk-11-jre | 11.0.24+8-1 | pkg:deb/debian/openjdk-11-jre?arch=amd64 | amd64 |
+| 23 | openjdk-17-jdk | 17.0.12+7-2 | pkg:deb/debian/openjdk-17-jdk?arch=amd64 | amd64 |
+| 24 | lib-foo-dev | 1.0-1 | pkg:deb/debian/lib-foo-dev?arch=amd64 | amd64 |
+| 25 | lib.foo | 1.0-1 | pkg:deb/debian/lib.foo?arch=amd64 | amd64 |
+| 26 | python3.11 | 3.11.2-1 | pkg:deb/debian/python3.11?arch=amd64 | amd64 |
+| 27 | linux-image | 2:5.10.0-1 | pkg:deb/debian/linux-image?arch=amd64 | amd64 |
+| 28 | nodejs | 18.0.0 | pkg:deb/debian/nodejs?arch=src | N/A |
+| 29 | nodejs | 18.0.0 | pkg:deb/debian/nodejs?arch=src | N/A |
+| 30 | package | 1.0~rc1-1 | pkg:deb/debian/package?arch=amd64 | amd64 |
+| 31 | package | 1.0~beta2-1 | pkg:deb/debian/package?arch=amd64 | amd64 |
+| 32 | package | 1.0~alpha1-1 | pkg:deb/debian/package?arch=amd64 | amd64 |
 
 ## 🔗 PURL 统计
 
-- **唯一包数量**: 13
+- **唯一包数量**: 18
 - **PURL 格式验证**: 全部符合 `pkg:deb/debian/<package_name>` 格式 ✅
 
 ## 📦 版本特性统计

@@ -151,9 +151,7 @@ class DebianPackageInfo:
     def package_purl(self) -> str:
         """
         生成 Package URL (PURL)
-
         格式: pkg:deb/debian/<package_name>
-
         只包含包名，不包含版本号和架构信息
         例如：
         - openjdk-11-demo_11.0.29+7-1_s390x.deb -> pkg:deb/debian/openjdk-11-demo
@@ -162,10 +160,12 @@ class DebianPackageInfo:
         # 基础 PURL
         purl = f"pkg:deb/debian/{self.package_name}"
 
-        # 如果有架构信息（二进制包），添加架构参数
-        # if self.architecture:
+        # 20260106 暂时不添加架构参数
+        # 如果有架构信息（二进制包），添加架构参数 
+        # if self.distribution_type == "binary" and self.architecture:
         #     purl += f"?arch={self.architecture}"
-
+        # else:
+        #     purl += f"?arch=src"
         return purl
 
 
@@ -242,13 +242,10 @@ class DebianURLParser:
     def parse_url(self, url: str) -> DebianPackageInfo:
         """
         解析 Debian 组件 URL
-
         Args:
             url: Debian 组件下载 URL
-
         Returns:
             DebianPackageInfo: 解析后的组件信息
-
         Raises:
             ValueError: 无法解析 URL
         """
@@ -262,6 +259,7 @@ class DebianURLParser:
         # 尝试匹配不同类型的文件
         if filename.endswith(('.deb', '.udeb')):
             info = self._parse_binary_package(url, filename)
+
         elif filename.endswith('.dsc'):
             info =  self._parse_dsc_file(url, filename)
         elif '.orig' in filename and filename.endswith(('.tar.gz', '.tar.xz', '.tar.bz2')):
@@ -319,6 +317,7 @@ class DebianURLParser:
 
         # 对于二进制包，version 应该包含架构信息
         full_version = f"{version_str}_{architecture}"
+        # full_version = f"{version_str}"
 
         return DebianPackageInfo(
             url=url,
@@ -343,6 +342,8 @@ class DebianURLParser:
 
         version_info = self._parse_version(version_str)
         is_native = version_info['debian_revision'] is None
+        
+        # full_version = f"{version_str}"
 
         return DebianPackageInfo(
             url=url,
@@ -397,7 +398,7 @@ class DebianURLParser:
             version=version_str,
             architecture=None,
             distribution_type="source",
-            file_type="upstream_source",  # 签名文件归类为上游源码的一部分
+            file_type="upstream_source_sig",  # 签名文件归类为上游源码的一部分
             is_native=False,
             **version_info
         )
