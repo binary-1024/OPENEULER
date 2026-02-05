@@ -741,6 +741,15 @@ def main():
         "http://ftp.gnome.org/pub/debian/pool/main/m/mopac7/mopac7-bin_1.15-5_s390x.deb",
         "http://ftp.gnome.org/pub/debian/pool/main/libg/libgc/libgc1c2_7.4.2-8.2_mips.deb",
         "http://ftp.gnome.org/pub/debian/pool/main/g/golang-github-spf13-cobra/cobra_0.0~git20170314.0.7be4bed-1+b1_i386.deb",
+
+        # 又新增不支持 case
+        "http://ftp.gnome.org/pub/debian/pool/main/libk/libkcapi/libkcapi_1.0.3-2.debian.tar.xz",
+        "http://ftp.gnome.org/pub/debian/pool/main/l/linux/nbd-modules-4.9.0-3-loongson-3-di_4.9.30-2_mipsel.udeb",
+        "http://ftp.gnome.org/pub/debian/pool/main/n/node-typescript/node-typescript_2.3.2really2.1.6.orig.tar.gz",
+        "http://ftp.gnome.org/pub/debian/pool/main/h/haskell-doctest/haskell-doctest_0.11.0-3.debian.tar.xz",
+        "http://ftp.gnome.org/pub/debian/pool/main/g/gdk-pixbuf/libgdk-pixbuf2.0-0-udeb_2.36.5-2_powerpc.udeb",
+        "http://ftp.gnome.org/pub/debian/pool/main/l/linux/core-modules-3.16.0-4-686-pae-di_3.16.43-2_i386.udeb",
+
     ]
 
     print("=" * 100)

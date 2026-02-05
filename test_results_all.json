@@ -3,7 +3,7 @@
     "url": "https://snapshot.debian.org/archive/debian/20251220T083035Z/pool/main/d/dpkg/dpkg_1.23.3_armhf.deb",
     "filename": "dpkg_1.23.3_armhf.deb",
     "package_name": "dpkg",
-    "version": "1.23.3",
+    "version": "1.23.3_armhf",
     "architecture": "armhf",
     "epoch": null,
     "upstream_version": "1.23.3",
@@ -20,13 +20,13 @@
     "distribution_type": "binary",
     "file_type": "binary",
     "is_native": true,
-    "package_purl": "pkg:deb/debian/dpkg?arch=armhf"
+    "package_purl": "pkg:deb/debian/dpkg"
   },
   {
     "url": "https://snapshot.debian.org/archive/debian-debug/20251114T210651Z/pool/main/liba/libabigail/abigail-tools-dbgsym_2.9-1_amd64.deb",
     "filename": "abigail-tools-dbgsym_2.9-1_amd64.deb",
     "package_name": "abigail-tools-dbgsym",
-    "version": "2.9-1",
+    "version": "2.9-1_amd64",
     "architecture": "amd64",
     "epoch": null,
     "upstream_version": "2.9",
@@ -43,13 +43,13 @@
     "distribution_type": "binary",
     "file_type": "binary",
     "is_native": false,
-    "package_purl": "pkg:deb/debian/abigail-tools-dbgsym?arch=amd64"
+    "package_purl": "pkg:deb/debian/abigail-tools-dbgsym"
   },
   {
     "url": "https://snapshot.debian.org/archive/debian-debug/20251114T210651Z/pool/main/liba/libabigail/abigail-tools-dbgsym_2.9-1_i386.deb",
     "filename": "abigail-tools-dbgsym_2.9-1_i386.deb",
     "package_name": "abigail-tools-dbgsym",
-    "version": "2.9-1",
+    "version": "2.9-1_i386",
     "architecture": "i386",
     "epoch": null,
     "upstream_version": "2.9",
@@ -66,13 +66,13 @@
     "distribution_type": "binary",
     "file_type": "binary",
     "is_native": false,
-    "package_purl": "pkg:deb/debian/abigail-tools-dbgsym?arch=i386"
+    "package_purl": "pkg:deb/debian/abigail-tools-dbgsym"
   },
   {
     "url": "https://example.com/pool/main/n/nginx/nginx_1.18.0-6.1_amd64.deb",
     "filename": "nginx_1.18.0-6.1_amd64.deb",
     "package_name": "nginx",
-    "version": "1.18.0-6.1",
+    "version": "1.18.0-6.1_amd64",
     "architecture": "amd64",
     "epoch": null,
     "upstream_version": "1.18.0",
@@ -89,13 +89,13 @@
     "distribution_type": "binary",
     "file_type": "binary",
     "is_native": false,
-    "package_purl": "pkg:deb/debian/nginx?arch=amd64"
+    "package_purl": "pkg:deb/debian/nginx"
   },
   {
     "url": "https://example.com/pool/main/n/nginx/nginx_1.18.0-6.1_i386.deb",
     "filename": "nginx_1.18.0-6.1_i386.deb",
     "package_name": "nginx",
-    "version": "1.18.0-6.1",
+    "version": "1.18.0-6.1_i386",
     "architecture": "i386",
     "epoch": null,
     "upstream_version": "1.18.0",
@@ -112,13 +112,13 @@
     "distribution_type": "binary",
     "file_type": "binary",
     "is_native": false,
-    "package_purl": "pkg:deb/debian/nginx?arch=i386"
+    "package_purl": "pkg:deb/debian/nginx"
   },
   {
     "url": "https://example.com/pool/main/n/nginx/nginx_1.18.0-6.1_arm64.deb",
     "filename": "nginx_1.18.0-6.1_arm64.deb",
     "package_name": "nginx",
-    "version": "1.18.0-6.1",
+    "version": "1.18.0-6.1_arm64",
     "architecture": "arm64",
     "epoch": null,
     "upstream_version": "1.18.0",
@@ -135,13 +135,13 @@
     "distribution_type": "binary",
     "file_type": "binary",
     "is_native": false,
-    "package_purl": "pkg:deb/debian/nginx?arch=arm64"
+    "package_purl": "pkg:deb/debian/nginx"
   },
   {
     "url": "https://example.com/pool/main/d/dpkg/dpkg_1.23.3_armhf.deb",
     "filename": "dpkg_1.23.3_armhf.deb",
     "package_name": "dpkg",
-    "version": "1.23.3",
+    "version": "1.23.3_armhf",
     "architecture": "armhf",
     "epoch": null,
     "upstream_version": "1.23.3",
@@ -158,13 +158,13 @@
     "distribution_type": "binary",
     "file_type": "binary",
     "is_native": true,
-    "package_purl": "pkg:deb/debian/dpkg?arch=armhf"
+    "package_purl": "pkg:deb/debian/dpkg"
   },
   {
     "url": "https://example.com/pool/main/o/openjdk-11/openjdk-11-demo_11.0.29+7-1_s390x.deb",
     "filename": "openjdk-11-demo_11.0.29+7-1_s390x.deb",
     "package_name": "openjdk-11-demo",
-    "version": "11.0.29+7-1",
+    "version": "11.0.29+7-1_s390x",
     "architecture": "s390x",
     "epoch": null,
     "upstream_version": "11.0.29+7",
@@ -181,13 +181,13 @@
     "distribution_type": "binary",
     "file_type": "binary",
     "is_native": false,
-    "package_purl": "pkg:deb/debian/openjdk-11-demo?arch=s390x"
+    "package_purl": "pkg:deb/debian/openjdk-11-demo"
   },
   {
     "url": "https://example.com/pool/main/o/openssl/openssl_1.1.1n-0+deb11u5_amd64.deb",
     "filename": "openssl_1.1.1n-0+deb11u5_amd64.deb",
     "package_name": "openssl",
-    "version": "1.1.1n-0+deb11u5",
+    "version": "1.1.1n-0+deb11u5_amd64",
     "architecture": "amd64",
     "epoch": null,
     "upstream_version": "1.1.1n",
@@ -204,13 +204,13 @@
     "distribution_type": "binary",
     "file_type": "binary",
     "is_native": false,
-    "package_purl": "pkg:deb/debian/openssl?arch=amd64"
+    "package_purl": "pkg:deb/debian/openssl"
   },
   {
     "url": "https://example.com/pool/main/p/package/package_1.2.3+dfsg1-2+deb12u1_amd64.deb",
     "filename": "package_1.2.3+dfsg1-2+deb12u1_amd64.deb",
     "package_name": "package",
-    "version": "1.2.3+dfsg1-2+deb12u1",
+    "version": "1.2.3+dfsg1-2+deb12u1_amd64",
     "architecture": "amd64",
     "epoch": null,
     "upstream_version": "1.2.3",
@@ -227,7 +227,7 @@
     "distribution_type": "binary",
     "file_type": "binary",
     "is_native": false,
-    "package_purl": "pkg:deb/debian/package?arch=amd64"
+    "package_purl": "pkg:deb/debian/package"
   },
   {
     "url": "https://snapshot.debian.org/package/libabigail/2.9-1/nginx_1.28.0-6.dsc",
@@ -250,7 +250,7 @@
     "distribution_type": "source",
     "file_type": "build_file",
     "is_native": false,
-    "package_purl": "pkg:deb/debian/nginx?arch=src"
+    "package_purl": "pkg:deb/debian/nginx"
   },
   {
     "url": "https://snapshot.debian.org/package/libabigail/2.9-1/nginx_1.28.0.orig.tar.gz",
@@ -273,7 +273,7 @@
     "distribution_type": "source",
     "file_type": "upstream_source",
     "is_native": false,
-    "package_purl": "pkg:deb/debian/nginx?arch=src"
+    "package_purl": "pkg:deb/debian/nginx"
   },
   {
     "url": "https://snapshot.debian.org/package/libabigail/2.9-1/nginx_1.28.0.orig.tar.gz.asc",
@@ -294,9 +294,9 @@
     "release_version": null,
     "security_update": null,
     "distribution_type": "source",
-    "file_type": "upstream_source",
+    "file_type": "upstream_source_sig",
     "is_native": false,
-    "package_purl": "pkg:deb/debian/nginx?arch=src"
+    "package_purl": "pkg:deb/debian/nginx"
   },
   {
     "url": "https://snapshot.debian.org/package/libabigail/2.9-1/nginx_1.28.0-6.debian.tar.xz",
@@ -319,7 +319,7 @@
     "distribution_type": "source",
     "file_type": "upstream_source_patch",
     "is_native": false,
-    "package_purl": "pkg:deb/debian/nginx?arch=src"
+    "package_purl": "pkg:deb/debian/nginx"
   },
   {
     "url": "https://snapshot.debian.org/package/dpkg/1.23.3/dpkg_1.23.3.tar.xz",
@@ -342,7 +342,7 @@
     "distribution_type": "source",
     "file_type": "native_source",
     "is_native": true,
-    "package_purl": "pkg:deb/debian/dpkg?arch=src"
+    "package_purl": "pkg:deb/debian/dpkg"
   },
   {
     "url": "https://snapshot.debian.org/package/dpkg/1.23.3/dpkg_1.23.3.dsc",
@@ -365,13 +365,13 @@
     "distribution_type": "source",
     "file_type": "build_file",
     "is_native": true,
-    "package_purl": "pkg:deb/debian/dpkg?arch=src"
+    "package_purl": "pkg:deb/debian/dpkg"
   },
   {
     "url": "https://example.com/pool/main/p/package/package_1.2.3+dfsg1-2+deb12u1_amd64.deb",
     "filename": "package_1.2.3+dfsg1-2+deb12u1_amd64.deb",
     "package_name": "package",
-    "version": "1.2.3+dfsg1-2+deb12u1",
+    "version": "1.2.3+dfsg1-2+deb12u1_amd64",
     "architecture": "amd64",
     "epoch": null,
     "upstream_version": "1.2.3",
@@ -388,13 +388,13 @@
     "distribution_type": "binary",
     "file_type": "binary",
     "is_native": false,
-    "package_purl": "pkg:deb/debian/package?arch=amd64"
+    "package_purl": "pkg:deb/debian/package"
   },
   {
     "url": "https://example.com/pool/main/p/package/package_1.0+really1.0-1_amd64.deb",
     "filename": "package_1.0+really1.0-1_amd64.deb",
     "package_name": "package",
-    "version": "1.0+really1.0-1",
+    "version": "1.0+really1.0-1_amd64",
     "architecture": "amd64",
     "epoch": null,
     "upstream_version": "1.0",
@@ -411,13 +411,13 @@
     "distribution_type": "binary",
     "file_type": "binary",
     "is_native": false,
-    "package_purl": "pkg:deb/debian/package?arch=amd64"
+    "package_purl": "pkg:deb/debian/package"
   },
   {
     "url": "https://example.com/pool/main/p/package/package_1.0-1+b2_amd64.deb",
     "filename": "package_1.0-1+b2_amd64.deb",
     "package_name": "package",
-    "version": "1.0-1+b2",
+    "version": "1.0-1+b2_amd64",
     "architecture": "amd64",
     "epoch": null,
     "upstream_version": "1.0",
@@ -434,13 +434,13 @@
     "distribution_type": "binary",
     "file_type": "binary",
     "is_native": false,
-    "package_purl": "pkg:deb/debian/package?arch=amd64"
+    "package_purl": "pkg:deb/debian/package"
   },
   {
     "url": "https://example.com/pool/main/p/package/package_2.0-1~bpo11+1_amd64.deb",
     "filename": "package_2.0-1~bpo11+1_amd64.deb",
     "package_name": "package",
-    "version": "2.0-1~bpo11+1",
+    "version": "2.0-1~bpo11+1_amd64",
     "architecture": "amd64",
     "epoch": null,
     "upstream_version": "2.0",
@@ -457,13 +457,13 @@
     "distribution_type": "binary",
     "file_type": "binary",
     "is_native": false,
-    "package_purl": "pkg:deb/debian/package?arch=amd64"
+    "package_purl": "pkg:deb/debian/package"
   },
   {
     "url": "https://example.com/pool/main/p/package/package_1.0-1ubuntu1.1_amd64.deb",
     "filename": "package_1.0-1ubuntu1.1_amd64.deb",
     "package_name": "package",
-    "version": "1.0-1ubuntu1.1",
+    "version": "1.0-1ubuntu1.1_amd64",
     "architecture": "amd64",
     "epoch": null,
     "upstream_version": "1.0",
@@ -480,13 +480,13 @@
     "distribution_type": "binary",
     "file_type": "binary",
     "is_native": false,
-    "package_purl": "pkg:deb/debian/package?arch=amd64"
+    "package_purl": "pkg:deb/debian/package"
   },
   {
     "url": "https://example.com/pool/main/o/openjdk-11/openjdk-11-jre_11.0.24+8-1_amd64.deb",
     "filename": "openjdk-11-jre_11.0.24+8-1_amd64.deb",
     "package_name": "openjdk-11-jre",
-    "version": "11.0.24+8-1",
+    "version": "11.0.24+8-1_amd64",
     "architecture": "amd64",
     "epoch": null,
     "upstream_version": "11.0.24+8",
@@ -503,13 +503,13 @@
     "distribution_type": "binary",
     "file_type": "binary",
     "is_native": false,
-    "package_purl": "pkg:deb/debian/openjdk-11-jre?arch=amd64"
+    "package_purl": "pkg:deb/debian/openjdk-11-jre"
   },
   {
     "url": "https://example.com/pool/main/o/openjdk-17/openjdk-17-jdk_17.0.12+7-2_amd64.deb",
     "filename": "openjdk-17-jdk_17.0.12+7-2_amd64.deb",
     "package_name": "openjdk-17-jdk",
-    "version": "17.0.12+7-2",
+    "version": "17.0.12+7-2_amd64",
     "architecture": "amd64",
     "epoch": null,
     "upstream_version": "17.0.12+7",
@@ -526,13 +526,13 @@
     "distribution_type": "binary",
     "file_type": "binary",
     "is_native": false,
-    "package_purl": "pkg:deb/debian/openjdk-17-jdk?arch=amd64"
+    "package_purl": "pkg:deb/debian/openjdk-17-jdk"
   },
   {
     "url": "https://example.com/pool/main/l/lib-foo/lib-foo-dev_1.0-1_amd64.deb",
     "filename": "lib-foo-dev_1.0-1_amd64.deb",
     "package_name": "lib-foo-dev",
-    "version": "1.0-1",
+    "version": "1.0-1_amd64",
     "architecture": "amd64",
     "epoch": null,
     "upstream_version": "1.0",
@@ -549,13 +549,13 @@
     "distribution_type": "binary",
     "file_type": "binary",
     "is_native": false,
-    "package_purl": "pkg:deb/debian/lib-foo-dev?arch=amd64"
+    "package_purl": "pkg:deb/debian/lib-foo-dev"
   },
   {
     "url": "https://example.com/pool/main/l/lib.foo/lib.foo_1.0-1_amd64.deb",
     "filename": "lib.foo_1.0-1_amd64.deb",
     "package_name": "lib.foo",
-    "version": "1.0-1",
+    "version": "1.0-1_amd64",
     "architecture": "amd64",
     "epoch": null,
     "upstream_version": "1.0",
@@ -572,13 +572,13 @@
     "distribution_type": "binary",
     "file_type": "binary",
     "is_native": false,
-    "package_purl": "pkg:deb/debian/lib.foo?arch=amd64"
+    "package_purl": "pkg:deb/debian/lib.foo"
   },
   {
     "url": "https://example.com/pool/main/p/python3.11/python3.11_3.11.2-1_amd64.deb",
     "filename": "python3.11_3.11.2-1_amd64.deb",
     "package_name": "python3.11",
-    "version": "3.11.2-1",
+    "version": "3.11.2-1_amd64",
     "architecture": "amd64",
     "epoch": null,
     "upstream_version": "3.11.2",
@@ -595,13 +595,13 @@
     "distribution_type": "binary",
     "file_type": "binary",
     "is_native": false,
-    "package_purl": "pkg:deb/debian/python3.11?arch=amd64"
+    "package_purl": "pkg:deb/debian/python3.11"
   },
   {
     "url": "https://example.com/pool/main/l/linux/linux-image_2:5.10.0-1_amd64.deb",
     "filename": "linux-image_2:5.10.0-1_amd64.deb",
     "package_name": "linux-image",
-    "version": "2:5.10.0-1",
+    "version": "2:5.10.0-1_amd64",
     "architecture": "amd64",
     "epoch": "2",
     "upstream_version": "5.10.0",
@@ -618,7 +618,7 @@
     "distribution_type": "binary",
     "file_type": "binary",
     "is_native": false,
-    "package_purl": "pkg:deb/debian/linux-image?arch=amd64"
+    "package_purl": "pkg:deb/debian/linux-image"
   },
   {
     "url": "https://example.com/pool/main/n/nodejs/nodejs_18.0.0.orig-component1.tar.gz",
@@ -641,7 +641,7 @@
     "distribution_type": "source",
     "file_type": "upstream_source",
     "is_native": false,
-    "package_purl": "pkg:deb/debian/nodejs?arch=src"
+    "package_purl": "pkg:deb/debian/nodejs"
   },
   {
     "url": "https://example.com/pool/main/n/nodejs/nodejs_18.0.0.orig-component2.tar.gz",
@@ -664,13 +664,13 @@
     "distribution_type": "source",
     "file_type": "upstream_source",
     "is_native": false,
-    "package_purl": "pkg:deb/debian/nodejs?arch=src"
+    "package_purl": "pkg:deb/debian/nodejs"
   },
   {
     "url": "https://example.com/pool/main/p/package/package_1.0~rc1-1_amd64.deb",
     "filename": "package_1.0~rc1-1_amd64.deb",
     "package_name": "package",
-    "version": "1.0~rc1-1",
+    "version": "1.0~rc1-1_amd64",
     "architecture": "amd64",
     "epoch": null,
     "upstream_version": "1.0~rc1",
@@ -687,13 +687,13 @@
     "distribution_type": "binary",
     "file_type": "binary",
     "is_native": false,
-    "package_purl": "pkg:deb/debian/package?arch=amd64"
+    "package_purl": "pkg:deb/debian/package"
   },
   {
     "url": "https://example.com/pool/main/p/package/package_1.0~beta2-1_amd64.deb",
     "filename": "package_1.0~beta2-1_amd64.deb",
     "package_name": "package",
-    "version": "1.0~beta2-1",
+    "version": "1.0~beta2-1_amd64",
     "architecture": "amd64",
     "epoch": null,
     "upstream_version": "1.0~beta2",
@@ -710,13 +710,13 @@
     "distribution_type": "binary",
     "file_type": "binary",
     "is_native": false,
-    "package_purl": "pkg:deb/debian/package?arch=amd64"
+    "package_purl": "pkg:deb/debian/package"
   },
   {
     "url": "https://example.com/pool/main/p/package/package_1.0~alpha1-1_amd64.deb",
     "filename": "package_1.0~alpha1-1_amd64.deb",
     "package_name": "package",
-    "version": "1.0~alpha1-1",
+    "version": "1.0~alpha1-1_amd64",
     "architecture": "amd64",
     "epoch": null,
     "upstream_version": "1.0~alpha1",
@@ -733,6 +733,6 @@
     "distribution_type": "binary",
     "file_type": "binary",
     "is_native": false,
-    "package_purl": "pkg:deb/debian/package?arch=amd64"
+    "package_purl": "pkg:deb/debian/package"
   }
 ]
