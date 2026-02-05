@@ -161,7 +161,7 @@ class DebianPackageInfo:
         purl = f"pkg:deb/debian/{self.package_name}"
 
         # 20260106 暂时不添加架构参数
-        # 如果有架构信息（二进制包），添加架构参数 
+        # 如果有架构信息（二进制包），添加架构参数
         # if self.distribution_type == "binary" and self.architecture:
         #     purl += f"?arch={self.architecture}"
         # else:
@@ -175,15 +175,20 @@ class DebianURLParser:
     # 二进制包文件名正则（.deb 和 .udeb 文件）
     # 格式: <package>_<version>_<arch>.deb 或 <package>_<version>_<arch>.udeb
     # .udeb 是 Debian 安装器使用的微型包
+    # BINARY_PATTERN = re.compile(
+    #     # 包名是第一个_之前的内容
+    #     # +？ 非贪婪匹配保证了遇到第一个下划线停止
+    #     # 包名可以包含：字母(大小写)、数字、加号、点号、连字符、波浪号
+    #     r'^(?P<package>[a-zA-Z0-9][a-zA-Z0-9+.~-]+?)_'
+    #     # 版本是第一个_到第二个_之间的内容
+    #     r'(?P<version>.+?)_'
+    #     # 架构要用最后一个下划线到.deb/.udeb等文件后缀名之间的内容
+    #     r'(?P<arch>[a-z0-9-]+)\.(?:deb|udeb)$'
+    # )
     BINARY_PATTERN = re.compile(
-        # 包名是第一个_之前的内容
-        # +？ 非贪婪匹配保证了遇到第一个下划线停止
-        # 包名可以包含：字母(大小写)、数字、加号、点号、连字符、波浪号
         r'^(?P<package>[a-zA-Z0-9][a-zA-Z0-9+.~-]+?)_'
-        # 版本是第一个_到第二个_之间的内容
-        r'(?P<version>.+?)_'
-        # 架构要用最后一个下划线到.deb/.udeb等文件后缀名之间的内容
-        r'(?P<arch>[a-z0-9-]+)\.(?:deb|udeb)$'
+        r'(?P<version>.+)_'  # 改为贪婪匹配
+        r'(?P<arch>[a-z0-9]+(?:-[a-z0-9]+)*)\.(?:deb|udeb)$'  # 更精确的架构匹配
     )
 
     # 老式二进制包文件名正则（无架构后缀）
@@ -342,7 +347,7 @@ class DebianURLParser:
 
         version_info = self._parse_version(version_str)
         is_native = version_info['debian_revision'] is None
-        
+
         # full_version = f"{version_str}"
 
         return DebianPackageInfo(
@@ -728,6 +733,14 @@ def main():
         "https://example.com/pool/main/p/package/package_1.0-1+b2_amd64.deb",
         "https://example.com/pool/main/p/package/package_2.0-1~bpo11+1_amd64.deb",
         "https://example.com/pool/main/p/package/package_1.0-1ubuntu1.1_amd64.deb",
+
+        # 新增不识别 case
+        "http://ftp.gnome.org/pub/debian/pool/main/p/python2.7/python2.7_2.7.13-2_hurd-i386.deb",
+        "http://ftp.gnome.org/pub/debian/pool/main/o/opencryptoki/libopencryptoki-dev_3.6.2+dfsg-2_mips64el.deb",
+        "http://ftp.gnome.org/pub/debian/pool/main/libo/libosmocore/libosmocore9_0.10.2-5_powerpc.deb",
+        "http://ftp.gnome.org/pub/debian/pool/main/m/mopac7/mopac7-bin_1.15-5_s390x.deb",
+        "http://ftp.gnome.org/pub/debian/pool/main/libg/libgc/libgc1c2_7.4.2-8.2_mips.deb",
+        "http://ftp.gnome.org/pub/debian/pool/main/g/golang-github-spf13-cobra/cobra_0.0~git20170314.0.7be4bed-1+b1_i386.deb",
     ]
 
     print("=" * 100)
