@@ -1,27 +1,117 @@
+## 适用范围
 
-## 输入： 组件 url 
+本项目只处理传入的 RPM URL 或 RPM 文件名，不访问仓库元数据，也不下载 RPM。
 
-## 解析方法：
+示例：
 
-基本一个 url 里面的元素就是上述这些元素了，我们开始从 url 来解析元素：
-- Url: https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP4/source/Packages/airline-0.7-1.oe2203sp4.src.rpm
-  - 发行版标识: openEuler-22.03-LTS-SP4 这个元素属于 url.split('/')[3]
-  - 组件名+版本号：comp_version_arch = url.split('/')[-2].strip('rpm')
-    组件名-上游版本号-修订号.发行版标识.架构.rpm
-    - 架构: arch = comp_version_arch.split('.')[-1] # 但是这个东西我们不用单切，架构号要作为版本号的一部分，不然没法区分不同的组件
-  - 切分组件 和 版本：
-    这个比较难以强行切分，第一组件名里面包含 - 标识，第二 版本号里面也会包含- 标识，即修订号，不过我们参考了 rpm 类的操作系统社区命名规范之后发现大家必须要求有修订号并且从 1 开始。这样的话我们就可以切分了。
-    - 版本：作为一个唯一标识的版本号，应该具备的信息如下：
-      上游版本号-修订号.发行版标识.架构
-      不稳妥方法：version = '-'.join(comp_version_arch.split('-')[-2:])
-      稳妥方法（以防架构号里面包含'-'）：
-      version = '-'.join(comp_version_arch.split('.')[-3].split('-')[-2:]) +'.'+'.'.join(comp_version_arch.split('.')[-2:])
-    -  组件名：组件名是最难切的，先把版本呢切出来剩余的就是组件名
-      comp_name = comp_version_arch.replace('-'+version, '')
-- 这样我们就获取了  组件名 和 版本 
-Fedora 版本号命名规范参考：
-- https://docs.fedoraproject.org/en-US/packaging-guidelines/Versioning/
+```text
+https://dl-cdn.openeuler.openatom.cn/openEuler-24.09/everything/riscv64/Packages/texlive-nolbreaks-doc-svn26786.1.2-2.oe2409.noarch.rpm
+```
 
+RPM 文件名按以下结构从右侧拆分：
 
-## 输出 
-返回两个变量 一个是 comp_name 一个是 version 
+```text
+NAME-VERSION-RELEASE.文件名架构.rpm
+```
+
+解析结果：
+
+```text
+NAME          = texlive-nolbreaks-doc
+VERSION       = svn26786.1.2
+RELEASE       = 2.oe2409
+文件名架构    = noarch
+Epoch         = unknown
+兼容 version  = svn26786.1.2-2.oe2409.noarch
+```
+
+## Epoch 边界
+
+Epoch 不编码在 RPM 文件名中。只有 URL 时：
+
+```text
+epoch       = None
+epoch_known = False
+```
+
+不能把缺失的 Epoch 猜成 `0`。例如上述包的官方 Epoch 实际为 `9`，但这个信息无法从 URL 字符串本身得出。
+
+## Python 接口
+
+```python
+from openeuler_url_parser import (
+    parse_openeuler_component_url,
+    parse_openeuler_rpm_url,
+)
+
+name, version = parse_openeuler_component_url(url)
+parts = parse_openeuler_rpm_url(url)
+
+print(parts.name)
+print(parts.version)
+print(parts.release)
+print(parts.filename_arch)
+print(parts.epoch)        # None
+print(parts.epoch_known)  # False
+```
+
+## 命令行
+
+直接查看一个或多个 URL：
+
+```bash
+python3 openeuler_url_parser.py "https://...rpm"
+```
+
+以机器可读 CSV 输出到 stdout：
+
+```bash
+python3 run.py parse "https://...rpm"
+```
+
+输出字段：
+
+```text
+comp_name,rpm_version,release,arch,epoch,epoch_known,version,url
+```
+
+其中 `epoch` 为空，`epoch_known` 为 `False`。
+
+验证现有三列 CSV：
+
+```bash
+python3 run.py validate old_os_url_info.csv new_os_url_info.csv
+```
+
+按 URL 原地修正 CSV：
+
+```bash
+python3 run.py normalize new_os_url_info.csv
+```
+
+从本地 TXT URL 列表重新生成 CSV：
+
+```bash
+python3 run.py rebuild-local new_os_ver_list new_os_url_info.csv
+```
+
+脚本不再提供 `refresh`，也没有仓库地址、发行版、架构、timeout、section 或 detailed CSV 参数。
+
+## 为什么必须从右侧解析
+
+- VERSION 不一定以数字开头，例如 `svn26786.1.2`、`v1.0.0`、`B.02.19.2` 或提交哈希。
+- NAME 可能包含数字型分段，例如 `cockpit-389-ds` 和 `hadoop-3.1-client`。
+- `.oe...` 可能属于包名，不能作为 NAME/VERSION 的固定边界。
+- `rstrip('.rpm')` 按字符集合删除结尾字符，不是精确删除 `.rpm`。
+- 错误的 NAME/VERSION 边界仍可能重新拼回相同文件名，所以回拼不能证明语义正确。
+
+## 测试
+
+```bash
+python3 -m unittest -v \
+  test_openeuler_url_parser.py \
+  test_run.py \
+  test_check_eo.py
+```
+
+测试包含原始根目录、tmp 脚本和使用示例中的全部 34 个唯一 RPM URL，以及 URL-only Epoch 语义、SVN/字母/哈希版本、数字型 NAME、ROS、热补丁、URL 转义、Source RPM、非法输入、CSV 纠错、权限和幂等性。

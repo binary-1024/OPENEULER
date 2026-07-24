@@ -1,58 +1,68 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-检查 new_os_url_info.csv 文件中不包含 'eo' 字符的行
-"""
+"""检查 RPM Release 中没有 openEuler ``oe<数字>`` 标识的 CSV 行。"""
+
+import argparse
+import csv
+import re
+from pathlib import Path
+
+from openeuler_url_parser import parse_openeuler_rpm_url
+
+OE_RELEASE_PATTERN = re.compile(r"(?:^|[._+~])oe\d", re.IGNORECASE)
+
+
+def release_has_oe_marker(release):
+    """只检查 Release 字段，避免被 ``noetic`` 等包名误导。"""
+    return bool(OE_RELEASE_PATTERN.search(release))
+
+
+def check_rows_without_oe_release(csv_file):
+    """返回 ``(CSV 行号, 行数据, Release)`` 列表。"""
+    results = []
+    with Path(csv_file).open("r", encoding="utf-8", newline="") as source:
+        reader = csv.DictReader(source)
+        required = {"comp_name", "version", "url"}
+        if reader.fieldnames is None or not required.issubset(reader.fieldnames):
+            raise ValueError(f"invalid CSV header: {reader.fieldnames!r}")
+
+        for line_number, row in enumerate(reader, 2):
+            parts = parse_openeuler_rpm_url(row["url"])
+            if not release_has_oe_marker(parts.release):
+                results.append((line_number, row, parts.release))
+    return results
+
 
 def check_lines_without_eo(csv_file):
-    """检查CSV文件中不包含'eo'字符的行"""
-    lines_without_eo = []
+    """兼容旧函数名；语义已修正为检查 Release 的 ``oe`` 标识。"""
+    return [
+        (line_number, row["url"])
+        for line_number, row, _ in check_rows_without_oe_release(csv_file)
+    ]
 
-    try:
-        with open(csv_file, 'r', encoding='utf-8') as f:
-            for line_num, line in enumerate(f, 1):
-                # 检查行中是否包含 'eo' 字符
-                if 'eo' not in line.lower():  # 不区分大小写检查
-                    lines_without_eo.append((line_num, line.strip()))
 
-        return lines_without_eo
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("csv_file", nargs="?", default="new_os_url_info.csv")
+    parser.add_argument(
+        "--show-all",
+        action="store_true",
+        help="输出全部命中行；默认只输出前 20 条",
+    )
+    args = parser.parse_args(argv)
 
-    except FileNotFoundError:
-        print(f"错误：找不到文件 {csv_file}")
-        return []
-    except Exception as e:
-        print(f"读取文件时发生错误：{e}")
-        return []
+    rows = check_rows_without_oe_release(args.csv_file)
+    limit = len(rows) if args.show_all else min(20, len(rows))
+    for line_number, row, release in rows[:limit]:
+        print(
+            f"line={line_number} release={release} "
+            f"name={row['comp_name']} url={row['url']}"
+        )
+    if len(rows) > limit:
+        print(f"... omitted {len(rows) - limit} rows; use --show-all to display them")
+    print(f"rows_without_oe_release={len(rows)}")
+    return 0
 
-def main():
-    csv_file = 'new_os_url_info.csv'
-
-    print(f"正在检查文件 {csv_file} 中不包含 'eo' 字符的行...")
-
-    # 检查不包含 'eo' 的行
-    lines_without_eo = check_lines_without_eo(csv_file)
-
-    if lines_without_eo:
-        print(f"\n发现 {len(lines_without_eo)} 行不包含 'eo' 字符：")
-        print("-" * 80)
-        for line_num, line_content in lines_without_eo:
-            print(f"第 {line_num} 行：{line_content}")
-            print("-" * 80)
-    else:
-        print("\n✅ 所有行都包含 'eo' 字符")
-
-    # 统计信息
-    try:
-        with open(csv_file, 'r', encoding='utf-8') as f:
-            total_lines = sum(1 for _ in f)
-
-        print(f"\n统计信息：")
-        print(f"总行数：{total_lines}")
-        print(f"不包含 'eo' 的行数：{len(lines_without_eo)}")
-        print(f"包含 'eo' 的行数：{total_lines - len(lines_without_eo)}")
-
-    except Exception as e:
-        print(f"统计文件行数时发生错误：{e}")
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
