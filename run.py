@@ -1,177 +1,259 @@
-from openeuler_url_parser import parse_openeuler_component_url
-import requests
-from bs4 import BeautifulSoup
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""仅依据 RPM URL 解析、生成、修正和验证 openEuler CSV。"""
+
+import argparse
+import csv
 import os
-import pandas as pd
-from urllib.parse import unquote
-def get_url_list():
-    # 这里只测试一部分，除了 everything 还有写其他乱麻七糟的，不过问题不大，不影响后续解析，都一样。
-    # https://archives.openeuler.openatom.cn/openEuler-21.03/everything/x86_64/Packages 中提取出 
-    # https://archives.openeuler.openatom.cn/openEuler-21.03/everything/x86_64/Packages/389-ds-base-devel-1.4.0.31-2.oe1.x86_64.rpm 这种 rpm 链接
-    # https://archives.openeuler.openatom.cn/openEuler-20.09/everything/x86_64/Packages/openEuler-20.09/CUnit-devel-2.1.3-21.oe1.x86_64.rpm
-    base_url_old = "https://archives.openeuler.openatom.cn"
-    old_os_ver_list = [
-        "openEuler-20.09,"
-        "openEuler-21.03,"
-        "openEuler-21.09,"
-        "openEuler-22.09"
-    ]
+import sys
+import tempfile
+from pathlib import Path
 
-    # https://dl-cdn.openeuler.openatom.cn/openEuler-20.03-LTS/everything/x86_64/Packages 中提取出 rpm 文件 url 
-    base_url_new = "https://dl-cdn.openeuler.openatom.cn"
-    new_os_ver_list = [
-        "openEuler-20.03-LTS,"
-        "openEuler-20.03-LTS-SP1,"
-        "openEuler-20.03-LTS-SP2,"
-        "openEuler-20.03-LTS-SP3,"
-        "openEuler-20.03-LTS-SP4,"
-        
-        "openEuler-20.09,"
-        "openEuler-21.03,"
-        "openEuler-21.09,"
+from openeuler_url_parser import parse_openeuler_component_url, parse_openeuler_rpm_url
 
-        "openEuler-22.03-LTS,"
-        "openEuler-22.03-LTS-64kb,"
-        "openEuler-22.03-LTS-SP1,"
-        "openEuler-22.03-LTS-SP2,"
-        "openEuler-22.03-LTS-SP3,"
-        "openEuler-22.03-LTS-SP4,"
-        
-        "openEuler-22.09,"
-        "openEuler-23.03,"
-        "openEuler-23.09,"
+BASE_CSV_FIELDS = {"comp_name", "version", "url"}
+PARSED_URL_FIELDS = [
+    "comp_name",
+    "rpm_version",
+    "release",
+    "arch",
+    "epoch",
+    "epoch_known",
+    "version",
+    "url",
+]
 
-        "openEuler-24.03-LTS,"
-        "openEuler-24.03-LTS-SP1,"
 
-        "openEuler-24.09,"
-        "openEuler-25.03"
-    ]
+def parsed_url_record(url):
+    """把一个 RPM URL 转换为结构化记录；Epoch 明确标记为未知。"""
+    parts = parse_openeuler_rpm_url(url)
+    return {
+        "comp_name": parts.name,
+        "rpm_version": parts.version,
+        "release": parts.release,
+        "arch": parts.filename_arch,
+        "epoch": None,
+        "epoch_known": False,
+        "version": parts.composite_version,
+        "url": url,
+    }
 
-    # 爬取对应链接， 按照不同的域名， 存储到不同的文件里面
-    for os_ver in old_os_ver_list:
-        url = f"https://archives.openeuler.openatom.cn/{os_ver}/everything/x86_64/Packages"
-        response = requests.get(url)
-        soup = BeautifulSoup(response.text, "html.parser")
-        for link in soup.find_all("a"):
-            if link.get("href").endswith(".rpm"):
-                with open(f"old_os_ver_list/{os_ver}.txt," "a") as f:
-                    f.write(url + '/' + link.get("href") + "\n")
-    
-    for os_ver in new_os_ver_list:
-        url = f"https://dl-cdn.openeuler.openatom.cn/{os_ver}/everything/x86_64/Packages"
-        response = requests.get(url)
-        soup = BeautifulSoup(response.text, "html.parser")
-        for link in soup.find_all("a"):
-            if link.get("href").endswith(".rpm"):
-                with open(f"new_os_ver_list/{os_ver}.txt," "a") as f:
-                    f.write(url + '/' + link.get("href") + "\n")
 
-def test():
-    # 拉取 url 列表
-    # url_list = get_url_list()
-    # 读取 url 列表生成文件
-    old_os_dir = "old_os_ver_list"
-    new_os_dir = "new_os_ver_list"
-    old_os_url_info = []
-    for file in os.listdir(old_os_dir):
-        with open(os.path.join(old_os_dir, file), "r") as f:
-            for url in f:
-                url = url.strip('\n')
-                comp_name, version = parse_openeuler_component_url(url)
-                old_os_url_info.append((comp_name, version, url))
-    new_os_url_info = []
-    for file in os.listdir(new_os_dir):
-        with open(os.path.join(new_os_dir, file), "r") as f:
-            for url in f:
-                url = url.strip('\n')
-                comp_name, version = parse_openeuler_component_url(url)
-                new_os_url_info.append((comp_name, version, url))
-    
-    old_os_url_info_file = "old_os_url_info.csv"
-    new_os_url_info_file = "new_os_url_info.csv"
-    old_os_url_info_df = pd.DataFrame(old_os_url_info, columns=["comp_name", "version", "url"])
-    new_os_url_info_df = pd.DataFrame(new_os_url_info, columns=["comp_name", "version", "url"])
-    old_os_url_info_df.to_csv(old_os_url_info_file, index=False)
-    new_os_url_info_df.to_csv(new_os_url_info_file, index=False)
-                
-    
-def result_test():
-    old_os_url_info_file = "old_os_url_info.csv"
-    new_os_url_info_file = "new_os_url_info.csv"
-    old_os_url_info_df = pd.read_csv(old_os_url_info_file)
-    new_os_url_info_df = pd.read_csv(new_os_url_info_file)
-    
-    
-    # for index, row in old_os_url_info_df.iloc[1:].iterrows():
-    #     comp_name = row['comp_name']
-    #     version = row['version']
-    #     url = row['url']
-    #     suffix = url.split('/')[-1]
-    #     manual_suffix = comp_name + '-' + version + '.' + 'rpm'
+def _atomic_text_writer(path, newline=None):
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = tempfile.NamedTemporaryFile(
+        mode="w",
+        encoding="utf-8",
+        newline=newline,
+        dir=path.parent,
+        prefix=f".{path.name}.",
+        delete=False,
+    )
+    try:
+        # NamedTemporaryFile 默认是 0600。保留已有文件权限，新文件使用 0644。
+        mode = path.stat().st_mode & 0o7777 if path.exists() else 0o644
+        os.chmod(temporary.name, mode)
+    except Exception:
+        temporary.close()
+        Path(temporary.name).unlink(missing_ok=True)
+        raise
+    return path, temporary
 
-    #     if suffix != manual_suffix:
-    #         print(f"url: {url} 解析错误")
-    #         print(f"suffix: {suffix} 正确suffix: {manual_suffix}")
-    #         print("-" * 100)
 
-    for index, row in new_os_url_info_df.iloc[1:].iterrows():
-        comp_name = row['comp_name']
-        version = row['version']
-        url = row['url']
-        suffix = url.split('/')[-1]
-        manual_suffix = comp_name + '-' + version + '.' + 'rpm'
-        suffix = unquote(suffix)
-        if suffix != manual_suffix:
-            print(f"url: {url} 解析错误")
-            print(f"suffix: {suffix} 正确suffix: {manual_suffix}")
-            print("-" * 100)
-    
-    for index, row in old_os_url_info_df.iloc[1:].iterrows():
-        comp_name = row['comp_name']
-        version = row['version']
-        url = row['url']
-        suffix = url.split('/')[-1]
-        manual_suffix = comp_name + '-' + version + '.' + 'rpm'
-        suffix = unquote(suffix)
-        if suffix != manual_suffix:
-            print(f"url: {url} 解析错误")
-            print(f"suffix: {suffix} 正确suffix: {manual_suffix}")
-            print("-" * 100)
+def _write_compatibility_csv(rows_by_url, output_csv):
+    path, temporary = _atomic_text_writer(output_csv, newline="")
+    try:
+        writer = csv.writer(temporary, lineterminator="\n")
+        writer.writerow(["comp_name", "version", "url"])
+        for url in sorted(rows_by_url):
+            comp_name, version = rows_by_url[url]
+            writer.writerow([comp_name, version, url])
+        temporary.close()
+        os.replace(temporary.name, path)
+    except Exception:
+        temporary.close()
+        Path(temporary.name).unlink(missing_ok=True)
+        raise
+
+
+def generate_csv_from_urls(urls, output_csv):
+    """从 URL iterable 生成稳定排序、去重的兼容三列 CSV。"""
+    rows_by_url = {}
+    for index, raw_url in enumerate(urls, 1):
+        url = raw_url.strip()
+        if not url:
+            continue
+        try:
+            rows_by_url[url] = parse_openeuler_component_url(url)
+        except (TypeError, ValueError) as exc:
+            raise ValueError(f"URL item {index}: {exc}") from exc
+    _write_compatibility_csv(rows_by_url, output_csv)
+
+
+def generate_csv_from_url_lists(input_dir, output_csv):
+    """读取目录内全部 ``*.txt`` URL 列表并生成兼容三列 CSV。"""
+    rows_by_url = {}
+    for path in sorted(Path(input_dir).glob("*.txt")):
+        with path.open("r", encoding="utf-8") as source:
+            for line_number, raw_line in enumerate(source, 1):
+                url = raw_line.strip()
+                if not url:
+                    continue
+                try:
+                    rows_by_url[url] = parse_openeuler_component_url(url)
+                except (TypeError, ValueError) as exc:
+                    raise ValueError(f"{path}:{line_number}: {exc}") from exc
+    _write_compatibility_csv(rows_by_url, output_csv)
+
+
+def normalize_csv(csv_path, output_path=None):
+    """按 URL 修正 comp_name/version，保留字段和行序并原子写入。
+
+    返回实际修正行数。原地处理且 0 行变化时不替换原文件。
+    """
+    csv_path = Path(csv_path)
+    output_path = Path(output_path) if output_path else csv_path
+    changed = 0
+    path, temporary = _atomic_text_writer(output_path, newline="")
+    try:
+        with csv_path.open("r", encoding="utf-8", newline="") as source:
+            reader = csv.DictReader(source)
+            if reader.fieldnames is None or not BASE_CSV_FIELDS.issubset(
+                reader.fieldnames
+            ):
+                raise ValueError(f"invalid CSV header: {reader.fieldnames!r}")
+            if len(reader.fieldnames) != len(set(reader.fieldnames)):
+                raise ValueError(f"duplicate CSV header: {reader.fieldnames!r}")
+
+            writer = csv.DictWriter(
+                temporary, fieldnames=list(reader.fieldnames), lineterminator="\n"
+            )
+            writer.writeheader()
+            for line_number, row in enumerate(reader, 2):
+                if None in row:
+                    raise ValueError(f"line {line_number}: unexpected extra CSV fields")
+                comp_name, version = parse_openeuler_component_url(row["url"])
+                if (row["comp_name"], row["version"]) != (comp_name, version):
+                    row["comp_name"] = comp_name
+                    row["version"] = version
+                    changed += 1
+                writer.writerow(row)
+
+        temporary.close()
+        if changed == 0 and output_path == csv_path:
+            Path(temporary.name).unlink()
+        else:
+            os.replace(temporary.name, path)
+    except Exception:
+        temporary.close()
+        Path(temporary.name).unlink(missing_ok=True)
+        raise
+    return changed
+
+
+def validate_csv(csv_path):
+    """严格验证 URL、组件名和兼容 version，返回错误字符串列表。"""
+    errors = []
+    seen_urls = set()
+    with Path(csv_path).open("r", encoding="utf-8", newline="") as source:
+        reader = csv.DictReader(source)
+        if reader.fieldnames is None or not BASE_CSV_FIELDS.issubset(reader.fieldnames):
+            return [f"invalid CSV header: {reader.fieldnames!r}"]
+        if len(reader.fieldnames) != len(set(reader.fieldnames)):
+            return [f"duplicate CSV header: {reader.fieldnames!r}"]
+
+        for line_number, row in enumerate(reader, 2):
+            if None in row:
+                errors.append(f"line {line_number}: unexpected extra CSV fields")
+            if not all(row.get(field) for field in BASE_CSV_FIELDS):
+                errors.append(f"line {line_number}: empty required field")
+                continue
+
+            url = row["url"]
+            if url in seen_urls:
+                errors.append(f"line {line_number}: duplicate URL: {url}")
+            seen_urls.add(url)
+
+            try:
+                actual = parse_openeuler_component_url(url)
+            except (TypeError, ValueError) as exc:
+                errors.append(f"line {line_number}: parse error: {exc}")
+                continue
+
+            expected = (row["comp_name"], row["version"])
+            if actual != expected:
+                errors.append(
+                    f"line {line_number}: expected {expected!r}, parsed {actual!r}"
+                )
+    return errors
+
+
+def _parse_urls_to_stdout(urls):
+    writer = csv.DictWriter(
+        sys.stdout, fieldnames=PARSED_URL_FIELDS, lineterminator="\n"
+    )
+    writer.writeheader()
+    error_count = 0
+    for url in urls:
+        try:
+            writer.writerow(parsed_url_record(url))
+        except (TypeError, ValueError) as exc:
+            error_count += 1
+            print(f"{url}: {exc}", file=sys.stderr)
+    return 1 if error_count else 0
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    subparsers = parser.add_subparsers(dest="command", required=True)
+
+    parse_parser = subparsers.add_parser(
+        "parse", help="解析一个或多个 RPM URL，结果以 CSV 输出到 stdout"
+    )
+    parse_parser.add_argument("url", nargs="+")
+
+    validate_parser = subparsers.add_parser("validate", help="严格验证三列 CSV")
+    validate_parser.add_argument("csv", nargs="+", type=Path)
+
+    normalize_parser = subparsers.add_parser(
+        "normalize", help="按 URL 修正 CSV 中的组件名和版本"
+    )
+    normalize_parser.add_argument("csv", nargs="+", type=Path)
+
+    rebuild_parser = subparsers.add_parser(
+        "rebuild-local", help="从本地 TXT URL 列表重新生成三列 CSV"
+    )
+    rebuild_parser.add_argument("input_dir", type=Path)
+    rebuild_parser.add_argument("output_csv", type=Path)
+
+    args = parser.parse_args(argv)
+
+    if args.command == "parse":
+        return _parse_urls_to_stdout(args.url)
+
+    if args.command == "validate":
+        error_count = 0
+        for path in args.csv:
+            errors = validate_csv(path)
+            if errors:
+                error_count += len(errors)
+                for error in errors:
+                    print(f"{path}: {error}")
+            else:
+                print(f"{path}: OK")
+        return 1 if error_count else 0
+
+    if args.command == "normalize":
+        for path in args.csv:
+            changed = normalize_csv(path)
+            print(f"{path}: normalized_rows={changed}")
+        return 0
+
+    generate_csv_from_url_lists(args.input_dir, args.output_csv)
+    print(f"wrote {args.output_csv}")
+    return 0
 
 
 if __name__ == "__main__":
-    # badcase = [
-    #     "https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/cpp-10.3.1-20.x86_64.rpm",
-    #     "https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/fpack-3.490-2.x86_64.rpm",
-    #     "https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/gcc-10.3.1-20.x86_64.rpm",
-    #     "https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/iSulad-2.0.17-14.x86_64.rpm",
-    #     "https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/iniparser-4.1-4.x86_64.rpm",
-    #     "https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/libasan-10.3.1-20.x86_64.rpm",
-    #     "https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/libatomic-10.3.1-20.x86_64.rpm",
-    #     "https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/libbson-1.13.1-6.x86_64.rpm",
-    #     "https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/libgcc-10.3.1-20.x86_64.rpm",
-    #     "https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/libgccjit-10.3.1-20.x86_64.rpm",
-    #     "https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/libgfortran-10.3.1-20.x86_64.rpm",
-    #     "https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/libgomp-10.3.1-20.x86_64.rpm",
-    #     "https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/libhdfs-3.3.4-2.x86_64.rpm",
-    #     "https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/libitm-10.3.1-20.x86_64.rpm",
-    #     "https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/liblsan-10.3.1-20.x86_64.rpm",
-    #     "https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/libobjc-10.3.1-20.x86_64.rpm",
-    #     "https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/libquadmath-10.3.1-20.x86_64.rpm",
-    #     "https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/libstdc%2B%2B-10.3.1-20.x86_64.rpm",
-    #     "https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/libtsan-10.3.1-20.x86_64.rpm",
-    #     "https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/libubsan-10.3.1-20.x86_64.rpm",
-    #     "https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/mrtg-2.17.7-3.x86_64.rpm",
-    #     "https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/mysql-8.0.29-1.x86_64.rpm",
-    #     "https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/sgxsdk-2.15.1-8.x86_64.rpm",
-    #     "https://dl-cdn.openeuler.openatom.cn/openEuler-22.03-LTS-SP1/everything/x86_64/Packages/suitesparse-5.10.1-2.x86_64.rpm"
-    # ]
-    # for url in badcase:
-    #     comp_name, version = parse_openeuler_component_url(url)
-    #     print(f"url: {url} 解析错误")
-    #     print(f"comp_name: {comp_name} 正确comp_name: {comp_name}")
-    #     print(f"version: {version} 正确version: {version}")
-    #     print("-" * 100)
-    test()
-    result_test()
+    raise SystemExit(main())
